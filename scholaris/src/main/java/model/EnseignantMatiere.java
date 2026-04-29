@@ -3,7 +3,7 @@ package model ;
  * Table de liaison entre un enseignant, une matière et une classe.
  * Représente "qui enseigne quoi dans quelle classe".
  */
-public class Enseignant_matiere {
+public class EnseignantMatiere {
     private int id;
     private int utilisateurId;
     private Professeur professeur;
@@ -12,9 +12,9 @@ public class Enseignant_matiere {
     private int classeId;
     private Classe classe;
 
-    public Enseignant_matiere() {}
+    public EnseignantMatiere() {}
 
-    public Enseignant_matiere(int id, int utilisateurId, int matiereId, int classeId) {
+    public EnseignantMatiere(int id, int utilisateurId, int matiereId, int classeId) {
         this.id = id; this.utilisateurId = utilisateurId;
         this.matiereId = matiereId; this.classeId = classeId;
     }

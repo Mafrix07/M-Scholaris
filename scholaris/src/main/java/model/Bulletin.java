@@ -6,6 +6,7 @@ public class Bulletin {
     private int etudiantId;
     private Etudiant etudiant;
     private int classeId;
+    private Classe classe;
     private String periode;
     private int anneeScolaire;
     private double moyenneGenerale;
@@ -85,6 +86,13 @@ public class Bulletin {
     } public void setEtudiant(Etudiant e) {
         this.etudiant = e;
     }
+
+    public Classe getClasse() {
+        return classe;
+    } public void setClasse(Classe c) {
+        this.classe = c;
+    }
+
     public int getClasseId() {
         return classeId;
     }
