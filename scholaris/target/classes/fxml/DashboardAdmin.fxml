@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.shape.Circle?>
+
+<BorderPane prefHeight="800.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.scholaris.controller.DashboardAdminController">
+   
+   <!-- Sidebar Gauche -->
+   <left>
+      <VBox prefWidth="250.0" styleClass="bg-sidebar" stylesheets="@../css/style.css">
+         <children>
+            <HBox alignment="CENTER_LEFT" spacing="15.0" style="-fx-padding: 30 20;">
+               <children>
+                  <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../images/Logo.png" />
+                     </image>
+                  </ImageView>
+                  <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Scholaris">
+                     <font>
+                        <Font name="System Bold" size="24.0" />
+                     </font>
+                  </Text>
+               </children>
+            </HBox>
+            
+            <VBox spacing="5.0" VBox.vgrow="ALWAYS">
+               <children>
+                  <HBox fx:id="menuHome" onMouseClicked="#showHome" styleClass="sidebar-item, sidebar-item-active">
+                     <children>
+                        <Label text="🏠  Accueil" />
+                     </children>
+                  </HBox>
+                  <HBox fx:id="menuUsers" onMouseClicked="#showUsers" styleClass="sidebar-item">
+                     <children>
+                        <Label text="👥  Utilisateurs" />
+                     </children>
+                  </HBox>
+                  <HBox fx:id="menuClasses" onMouseClicked="#showClasses" styleClass="sidebar-item">
+                     <children>
+                        <Label text="📚  Classes" />
+                     </children>
+                  </HBox>
+                  <HBox fx:id="menuMatieres" onMouseClicked="#showMatieres" styleClass="sidebar-item">
+                     <children>
+                        <Label text="📖  Matières" />
+                     </children>
+                  </HBox>
+                  <HBox fx:id="menuBulletins" onMouseClicked="#showBulletins" styleClass="sidebar-item">
+                     <children>
+                        <Label text="📊  Bulletins &amp; Rangs" />
+                     </children>
+                  </HBox>
+               </children>
+            </VBox>
+            
+            <HBox onMouseClicked="#handleLogout" styleClass="sidebar-item" style="-fx-padding: 20;">
+               <children>
+                  <Label text="🚪  Déconnexion" />
+               </children>
+            </HBox>
+         </children>
+      </VBox>
+   </left>
+   
+   <!-- Contenu Principal -->
+   <center>
+      <VBox styleClass="bg-content" stylesheets="@../css/style.css">
+         <children>
+            <!-- Header -->
+            <HBox alignment="CENTER_RIGHT" prefHeight="70.0" spacing="20.0" style="-fx-background-color: white; -fx-padding: 0 30;">
+               <children>
+                  <Label fx:id="adminNameLabel" text="Chargement..." textFill="#1E293B">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                  </Label>
+                  <Circle fill="#CBD5E1" radius="20.0" stroke="TRANSPARENT" strokeType="INSIDE" />
+               </children>
+            </HBox>
+            
+            <!-- Zone de contenu dynamique -->
+            <StackPane fx:id="contentArea" VBox.vgrow="ALWAYS">
+               <children>
+                  <!-- Vue Accueil (Statistiques) -->
+                  <VBox fx:id="viewHome" spacing="30.0" style="-fx-padding: 30;">
+                     <children>
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Tableau de bord">
+                           <font>
+                              <Font name="System Bold" size="24.0" />
+                           </font>
+                        </Text>
+                        
+                        <FlowPane hgap="20.0" vgap="20.0">
+                           <children>
+                              <VBox prefWidth="240.0" styleClass="stat-card">
+                                 <children>
+                                    <Label text="Total Utilisateurs" textFill="#94A3B8" />
+                                    <Label fx:id="statTotalUsers" text="0" textFill="#1E293B">
+                                       <font>
+                                          <Font name="System Bold" size="32.0" />
+                                       </font>
+                                    </Label>
+                                 </children>
+                              </VBox>
+                              <VBox prefWidth="240.0" styleClass="stat-card">
+                                 <children>
+                                    <Label text="Étudiants" textFill="#94A3B8" />
+                                    <Label fx:id="statTotalStudents" text="0" textFill="#1A73E8">
+                                       <font>
+                                          <Font name="System Bold" size="32.0" />
+                                       </font>
+                                    </Label>
+                                 </children>
+                              </VBox>
+                              <VBox prefWidth="240.0" styleClass="stat-card">
+                                 <children>
+                                    <Label text="Enseignants" textFill="#94A3B8" />
+                                    <Label fx:id="statTotalTeachers" text="0" textFill="#166534">
+                                       <font>
+                                          <Font name="System Bold" size="32.0" />
+                                       </font>
+                                    </Label>
+                                 </children>
+                              </VBox>
+                              <VBox prefWidth="240.0" styleClass="stat-card">
+                                 <children>
+                                    <Label text="Classes" textFill="#94A3B8" />
+                                    <Label fx:id="statTotalClasses" text="0" textFill="#991B1B">
+                                       <font>
+                                          <Font name="System Bold" size="32.0" />
+                                       </font>
+                                    </Label>
+                                 </children>
+                              </VBox>
+                           </children>
+                        </FlowPane>
+                     </children>
+                  </VBox>
+                  
+                  <!-- Vue Utilisateurs (Tableau) -->
+                  <VBox fx:id="viewUsers" spacing="20.0" style="-fx-padding: 30;" visible="false">
+                     <children>
+                        <HBox alignment="CENTER_LEFT" spacing="20.0">
+                           <children>
+                              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Gestion des Utilisateurs">
+                                 <font>
+                                    <Font name="System Bold" size="24.0" />
+                                 </font>
+                              </Text>
+                              <Region HBox.hgrow="ALWAYS" />
+                              <TextField fx:id="userSearchField" prefWidth="300.0" promptText="Rechercher un utilisateur..." />
+                           </children>
+                        </HBox>
+                        
+                        <TableView fx:id="usersTable" VBox.vgrow="ALWAYS">
+                           <columns>
+                              <TableColumn fx:id="colUserNom" prefWidth="150.0" text="Nom" />
+                              <TableColumn fx:id="colUserPrenom" prefWidth="150.0" text="Prénom" />
+                              <TableColumn fx:id="colUserEmail" prefWidth="200.0" text="Email" />
+                              <TableColumn fx:id="colUserRole" prefWidth="120.0" text="Rôle" />
+                              <TableColumn fx:id="colUserStatus" prefWidth="100.0" text="Statut" />
+                              <TableColumn fx:id="colUserActions" prefWidth="200.0" text="Actions" />
+                           </columns>
+                        </TableView>
+                     </children>
+                  </VBox>
+               </children>
+            </StackPane>
+         </children>
+      </VBox>
+   </center>
+</BorderPane>

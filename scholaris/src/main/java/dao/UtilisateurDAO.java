@@ -110,6 +110,7 @@ public class UtilisateurDAO implements IDao<Utilisateur> {
         return null;
     }
 
+
     /** Retourne tous les utilisateurs d'un rôle donné. */
     public List<Utilisateur> trouverParRole(String role) throws SQLException {
         List<Utilisateur> liste = new ArrayList<>();
@@ -160,4 +161,6 @@ public class UtilisateurDAO implements IDao<Utilisateur> {
 
         return u;
     }
+
+
 }
