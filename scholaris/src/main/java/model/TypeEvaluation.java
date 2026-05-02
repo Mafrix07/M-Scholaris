@@ -6,6 +6,8 @@ public class TypeEvaluation {
     private String code;
     private double poids;
 
+    // J'aime bien les chats
+
     // Constructeurs
     public TypeEvaluation() {}
 
