@@ -1,7 +1,7 @@
 package com.scholaris.controller;
 
-import dao.ClasseDAO;
-import dao.UtilisateurDAO;
+import com.scholaris.dao.ClasseDAO;
+import com.scholaris.dao.UtilisateurDAO;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -15,9 +15,9 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import model.Admin;
-import model.Utilisateur;
-import service.AuthService;
+import com.scholaris.model.Admin;
+import com.scholaris.model.Utilisateur;
+import com.scholaris.service.AuthService;
 
 import java.io.IOException;
 import java.sql.SQLException;

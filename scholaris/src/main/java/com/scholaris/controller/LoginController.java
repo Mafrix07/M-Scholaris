@@ -1,121 +1,112 @@
 package com.scholaris.controller;
 
+import com.scholaris.model.Utilisateur;
+import com.scholaris.service.AuthService;
+import com.scholaris.service.NavigationService;
+import com.scholaris.service.SessionManager;
+import javafx.animation.TranslateTransition;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.*;
-import javafx.stage.Stage;
-import model.Utilisateur;
-import service.AuthService;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.VBox;
+import javafx.util.Duration;
 
-import java.io.IOException;
 import java.sql.SQLException;
 
 public class LoginController {
 
-    @FXML private TextField emailField;
+    @FXML private TextField identifiantField;
     @FXML private PasswordField passwordField;
     @FXML private TextField passwordVisibleField;
-    @FXML private Label errorLabel;
     @FXML private Button togglePasswordBtn;
+    @FXML private Label errorLabel;
+    @FXML private VBox loginCard;
 
-    private AuthService authService;
     private boolean isPasswordVisible = false;
+    private AuthService authService;
 
+    @FXML
     public void initialize() {
         try {
             this.authService = new AuthService();
         } catch (SQLException e) {
-            showError("Erreur de connexion à la base de données.");
+            e.printStackTrace();
         }
+
+        // Synchronize text between fields
+        passwordField.textProperty().bindBidirectional(passwordVisibleField.textProperty());
     }
 
     @FXML
     void handleLogin(ActionEvent event) {
-        String email = emailField.getText();
-        String password = isPasswordVisible ? passwordVisibleField.getText() : passwordField.getText();
+        String username = identifiantField.getText().trim();
+        String password = passwordField.getText();
 
-        if (email.isEmpty() || password.isEmpty()) {
+        if (username.isEmpty() || password.isEmpty()) {
             showError("Veuillez remplir tous les champs.");
             return;
         }
 
         try {
-            Utilisateur u = authService.authentifier(email, password);
-            if (u != null) {
-                redirectUser(u, event);
-            } else {
-                showError("Email ou mot de passe incorrect.");
+            Utilisateur user = authService.login(username, password);
+
+            if (user == null) {
+                showError("Identifiant ou mot de passe incorrect.");
+                return;
             }
-        } catch (SQLException | IOException e) {
-            showError("Une erreur est survenue lors de la connexion.");
+
+            // Stocker l'utilisateur connecté en session
+            SessionManager.getInstance().setCurrentUser(user);
+
+            // Redirection selon le rôle récupéré depuis la BDD
+            String role = user.getRole().toLowerCase();
+            switch (role) {
+                case "admin" -> NavigationService.loadView("DashboardAdmin.fxml");
+                case "enseignant" -> NavigationService.loadView("DashboardEnseignant.fxml");
+                case "etudiant" -> NavigationService.loadView("DashboardEtudiant.fxml");
+                default -> showError("Rôle inconnu : " + role);
+            }
+
+        } catch (SQLException e) {
+            showError("Erreur de connexion à la base de données.");
             e.printStackTrace();
         }
     }
 
     @FXML
     void handleTogglePassword(ActionEvent event) {
-        if (isPasswordVisible) {
-            passwordField.setText(passwordVisibleField.getText());
-            passwordVisibleField.setVisible(false);
-            passwordVisibleField.setManaged(false);
-            passwordField.setVisible(true);
-            passwordField.setManaged(true);
-            togglePasswordBtn.setText("👁");
-        } else {
-            passwordVisibleField.setText(passwordField.getText());
-            passwordField.setVisible(false);
-            passwordField.setManaged(false);
-            passwordVisibleField.setVisible(true);
-            passwordVisibleField.setManaged(true);
-            togglePasswordBtn.setText("🔒");
-        }
         isPasswordVisible = !isPasswordVisible;
+        
+        if (isPasswordVisible) {
+            passwordVisibleField.setVisible(true);
+            passwordField.setVisible(false);
+            togglePasswordBtn.setText("🙈");
+        } else {
+            passwordVisibleField.setVisible(false);
+            passwordField.setVisible(true);
+            togglePasswordBtn.setText("👁️");
+        }
     }
 
     @FXML
-    void handleGoToSignup(ActionEvent event) throws IOException {
-        changeScene("/fxml/Signup.fxml", event);
-    }
-
-    private void redirectUser(Utilisateur u, ActionEvent event) throws IOException {
-        String fxmlFile = "";
-        switch (u.getRole().toLowerCase()) {
-            case "admin" -> fxmlFile = "/fxml/DashboardAdmin.fxml";
-            case "enseignant" -> fxmlFile = "/fxml/DashboardEnseignant.fxml";
-            case "etudiant" -> fxmlFile = "/fxml/DashboardEtudiant.fxml";
-            default -> {
-                showError("Rôle inconnu.");
-                return;
-            }
-        }
-        
-        FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFile));
-        Parent root = loader.load();
-        
-        // Optionnel : passer l'utilisateur au controller suivant
-        // if (u.getRole().equals("admin")) {
-        //     DashboardAdminController controller = loader.getController();
-        //     controller.setAdmin((Admin)u);
-        // }
-
-        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        stage.setScene(new Scene(root));
-        stage.show();
-    }
-
-    private void changeScene(String fxml, ActionEvent event) throws IOException {
-        Parent root = FXMLLoader.load(getClass().getResource(fxml));
-        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        stage.setScene(new Scene(root));
-        stage.show();
+    void handleSupport(ActionEvent event) {
+        // Logique pour contacter le support (ex: ouvrir une URL ou afficher une popup)
+        System.out.println("Contact support requested.");
     }
 
     private void showError(String message) {
         errorLabel.setText(message);
         errorLabel.setVisible(true);
+
+        // Animation shake légère sur la carte
+        TranslateTransition tt = new TranslateTransition(Duration.millis(50), loginCard);
+        tt.setFromX(0);
+        tt.setByX(10);
+        tt.setCycleCount(4);
+        tt.setAutoReverse(true);
+        tt.play();
     }
 }

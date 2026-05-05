@@ -1,8 +1,8 @@
 package com.scholaris.controller;
 
-import dao.ClasseDAO;
-import dao.EtudiantDAO;
-import dao.UtilisateurDAO;
+import com.scholaris.dao.ClasseDAO;
+import com.scholaris.dao.EtudiantDAO;
+import com.scholaris.dao.UtilisateurDAO;
 import javafx.animation.PauseTransition;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -13,9 +13,9 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import model.Classe;
-import model.Etudiant;
-import service.AuthService;
+import com.scholaris.model.Classe;
+import com.scholaris.model.Etudiant;
+import com.scholaris.service.AuthService;
 
 import java.io.IOException;
 import java.sql.SQLException;
