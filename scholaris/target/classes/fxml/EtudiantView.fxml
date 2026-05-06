@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox spacing="16.0" style="-fx-padding: 24;" styleClass="bg-page" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.scholaris.controller.EtudiantController">
+   <children>
+      <!-- HEADER -->
+      <HBox alignment="CENTER_LEFT">
+         <children>
+            <Label styleClass="h1" text="Gestion des étudiants" />
+            <Region HBox.hgrow="ALWAYS" />
+            <Button onAction="#handleAjouter" styleClass="primary-button" text="+ Ajouter un étudiant" />
+         </children>
+      </HBox>
+
+      <!-- FILTRES -->
+      <HBox spacing="12.0">
+         <children>
+            <TextField fx:id="searchField" promptText="Rechercher par nom, prénom ou matricule..." styleClass="text-field" HBox.hgrow="ALWAYS" />
+            <ComboBox fx:id="classeFilter" prefWidth="180.0" promptText="Toutes les classes" />
+            <ComboBox fx:id="niveauFilter" prefWidth="180.0" promptText="Tous les niveaux" />
+         </children>
+      </HBox>
+
+      <!-- TABLEAU -->
+      <TableView fx:id="etudiantTable" styleClass="table-view" VBox.vgrow="ALWAYS">
+         <columns>
+            <TableColumn fx:id="colMatricule" prefWidth="100.0" text="MATRICULE" />
+            <TableColumn fx:id="colNom" prefWidth="250.0" text="NOM COMPLET" />
+            <TableColumn fx:id="colDate" prefWidth="130.0" text="DATE NAISSANCE" />
+            <TableColumn fx:id="colClasse" prefWidth="120.0" text="CLASSE" />
+            <TableColumn fx:id="colMoyenne" prefWidth="100.0" text="MOY. GÉNÉRALE" />
+            <TableColumn fx:id="colActions" prefWidth="240.0" text="ACTIONS" />
+         </columns>
+      </TableView>
+
+      <!-- PAGINATION -->
+      <HBox alignment="CENTER" spacing="8.0">
+         <children>
+            <Button onAction="#handlePrevPage" styleClass="secondary-button" text="←" />
+            <HBox fx:id="pageButtons" alignment="CENTER" spacing="4.0" />
+            <Button onAction="#handleNextPage" styleClass="secondary-button" text="→" />
+            <Label fx:id="lblPagination" styleClass="text-muted" text="Page 1 sur 1" />
+         </children>
+      </HBox>
+   </children>
+</VBox>

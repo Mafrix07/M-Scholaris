@@ -18,7 +18,7 @@ import java.sql.SQLException;
 
 public class LoginController {
 
-    @FXML private TextField identifiantField;
+    @FXML private TextField emailField;
     @FXML private PasswordField passwordField;
     @FXML private TextField passwordVisibleField;
     @FXML private Button togglePasswordBtn;
@@ -42,22 +42,25 @@ public class LoginController {
 
     @FXML
     void handleLogin(ActionEvent event) {
-        String username = identifiantField.getText().trim();
+        System.out.println("Login attempt started...");
+        String email = emailField.getText().trim();
         String password = passwordField.getText();
 
-        if (username.isEmpty() || password.isEmpty()) {
+        if (email.isEmpty() || password.isEmpty()) {
             showError("Veuillez remplir tous les champs.");
             return;
         }
 
         try {
-            Utilisateur user = authService.login(username, password);
+            Utilisateur user = authService.login(email, password);
 
             if (user == null) {
-                showError("Identifiant ou mot de passe incorrect.");
+                System.out.println("Login failed: invalid credentials.");
+                showError("Email ou mot de passe incorrect.");
                 return;
             }
 
+            System.out.println("Login successful for: " + user.getNomComplet());
             // Stocker l'utilisateur connecté en session
             SessionManager.getInstance().setCurrentUser(user);
 
@@ -95,6 +98,12 @@ public class LoginController {
     void handleSupport(ActionEvent event) {
         // Logique pour contacter le support (ex: ouvrir une URL ou afficher une popup)
         System.out.println("Contact support requested.");
+    }
+
+    @FXML
+    void handleGoToSignup(ActionEvent event) {
+        System.out.println("Navigating to Signup...");
+        NavigationService.loadView("Signup.fxml");
     }
 
     private void showError(String message) {

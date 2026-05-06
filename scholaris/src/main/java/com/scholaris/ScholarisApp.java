@@ -1,5 +1,6 @@
 package com.scholaris;
 
+import com.scholaris.service.NavigationService;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -14,6 +15,9 @@ public class ScholarisApp extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+        // Initialiser le service de navigation
+        NavigationService.setPrimaryStage(primaryStage);
+
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/Login.fxml"));
         Parent root = loader.load();
         

@@ -27,7 +27,7 @@
                   </Text>
                </children>
             </HBox>
-            
+
             <VBox spacing="5.0" VBox.vgrow="ALWAYS">
                <children>
                   <HBox fx:id="menuHome" onMouseClicked="#showHome" styleClass="sidebar-item, sidebar-item-active">
@@ -57,7 +57,7 @@
                   </HBox>
                </children>
             </VBox>
-            
+
             <HBox onMouseClicked="#handleLogout" styleClass="sidebar-item" style="-fx-padding: 20;">
                <children>
                   <Label text="🚪  Déconnexion" />

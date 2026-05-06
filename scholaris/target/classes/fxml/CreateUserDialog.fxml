@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox prefWidth="420.0" spacing="16.0" style="-fx-padding: 32;" styleClass="card" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.scholaris.controller.CreateUserDialogController">
+    <children>
+        <HBox alignment="CENTER_LEFT">
+            <children>
+                <Label style="-fx-font-size: 18; -fx-font-weight: bold;" text="Créer un utilisateur" />
+                <Region HBox.hgrow="ALWAYS" />
+                <Button onAction="#handleClose" styleClass="btn-text-blue" text="✕" />
+            </children>
+        </HBox>
+
+        <VBox spacing="4.0">
+            <children>
+                <Label styleClass="input-label" text="IDENTIFIANT (EMAIL)" />
+                <TextField fx:id="fieldUsername" styleClass="input-field" />
+            </children>
+        </VBox>
+
+        <VBox spacing="4.0">
+            <children>
+                <Label styleClass="input-label" text="MOT DE PASSE" />
+                <PasswordField fx:id="fieldPassword" styleClass="input-field" />
+            </children>
+        </VBox>
+
+        <VBox spacing="4.0">
+            <children>
+                <Label styleClass="input-label" text="RÔLE" />
+                <ComboBox fx:id="roleCombo" maxWidth="Infinity" />
+            </children>
+        </VBox>
+
+        <VBox fx:id="etudiantSection" spacing="4.0">
+            <children>
+                <Label styleClass="input-label" text="LIER À UN ÉTUDIANT (Optionnel)" />
+                <ComboBox fx:id="etudiantCombo" maxWidth="Infinity" />
+            </children>
+        </VBox>
+
+        <HBox alignment="CENTER_RIGHT" spacing="12.0">
+            <children>
+                <Button onAction="#handleClose" styleClass="btn-secondary" text="Annuler" />
+                <Button onAction="#handleCreer" styleClass="btn-primary" text="Créer" />
+            </children>
+        </HBox>
+    </children>
+</VBox>

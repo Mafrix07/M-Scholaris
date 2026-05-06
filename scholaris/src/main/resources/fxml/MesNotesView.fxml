@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<ScrollPane fitToWidth="true" style="-fx-background-color: transparent;" styleClass="bg-page" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.scholaris.controller.MesNotesController">
+    <content>
+        <VBox spacing="16.0" style="-fx-padding: 24;">
+            <children>
+                <HBox alignment="CENTER_LEFT">
+                    <children>
+                        <VBox>
+                            <children>
+                                <Label styleClass="page-title" text="Mes notes" />
+                                <Label styleClass="text-muted" text="Détail de vos résultats par matière" />
+                            </children>
+                        </VBox>
+                        <Region HBox.hgrow="ALWAYS" />
+                        <ComboBox fx:id="trimestreCombo" prefWidth="180.0" promptText="Trimestre I" />
+                        <Region prefWidth="12.0" />
+                        <Label fx:id="lblMoyBadge" styleClass="badge-gold" text="Moyenne : 0.00" />
+                    </children>
+                </HBox>
+
+                <GridPane fx:id="notesGrid" hgap="16.0" vgap="16.0">
+                    <!-- Les cartes matières seront générées dynamiquement -->
+                </GridPane>
+
+                <HBox alignment="CENTER_LEFT" spacing="20.0" style="-fx-padding: 20; -fx-background-color: #0D1B4B; -fx-background-radius: 12;">
+                    <children>
+                        <Label style="-fx-font-size: 14;" styleClass="text-white" text="Moyenne générale : " />
+                        <Label fx:id="lblMoyGen" style="-fx-font-size: 20; -fx-font-weight: bold;" styleClass="text-gold" text="0.00" />
+                        <Region HBox.hgrow="ALWAYS" />
+                        <Label fx:id="lblRang" styleClass="text-white" text="Rang : -" />
+                        <Region HBox.hgrow="ALWAYS" />
+                        <Label fx:id="lblTrimestre" styleClass="text-faint" text="Trimestre I · 2025-2026" />
+                    </children>
+                </HBox>
+            </children>
+        </VBox>
+    </content>
+</ScrollPane>

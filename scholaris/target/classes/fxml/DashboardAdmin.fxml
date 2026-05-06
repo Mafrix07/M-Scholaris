@@ -11,60 +11,105 @@
    
    <!-- Sidebar Gauche -->
    <left>
-      <VBox prefWidth="250.0" styleClass="bg-sidebar" stylesheets="@../css/style.css">
-         <children>
-            <HBox alignment="CENTER_LEFT" spacing="15.0" style="-fx-padding: 30 20;">
-               <children>
-                  <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@../images/Logo.png" />
-                     </image>
-                  </ImageView>
-                  <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Scholaris">
-                     <font>
-                        <Font name="System Bold" size="24.0" />
-                     </font>
-                  </Text>
-               </children>
-            </HBox>
-            
-            <VBox spacing="5.0" VBox.vgrow="ALWAYS">
-               <children>
-                  <HBox fx:id="menuHome" onMouseClicked="#showHome" styleClass="sidebar-item, sidebar-item-active">
-                     <children>
-                        <Label text="🏠  Accueil" />
-                     </children>
-                  </HBox>
-                  <HBox fx:id="menuUsers" onMouseClicked="#showUsers" styleClass="sidebar-item">
-                     <children>
-                        <Label text="👥  Utilisateurs" />
-                     </children>
-                  </HBox>
-                  <HBox fx:id="menuClasses" onMouseClicked="#showClasses" styleClass="sidebar-item">
-                     <children>
-                        <Label text="📚  Classes" />
-                     </children>
-                  </HBox>
-                  <HBox fx:id="menuMatieres" onMouseClicked="#showMatieres" styleClass="sidebar-item">
-                     <children>
-                        <Label text="📖  Matières" />
-                     </children>
-                  </HBox>
-                  <HBox fx:id="menuBulletins" onMouseClicked="#showBulletins" styleClass="sidebar-item">
-                     <children>
-                        <Label text="📊  Bulletins &amp; Rangs" />
-                     </children>
-                  </HBox>
-               </children>
-            </VBox>
-            
-            <HBox onMouseClicked="#handleLogout" styleClass="sidebar-item" style="-fx-padding: 20;">
-               <children>
-                  <Label text="🚪  Déconnexion" />
-               </children>
-            </HBox>
-         </children>
-      </VBox>
+        <VBox prefWidth="340.0" styleClass="sidebar">
+            <children>
+
+                <!-- Logo + Nom de l'application -->
+                <HBox alignment="CENTER_LEFT" spacing="10.0">
+                    <children>
+                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
+                            <image>
+                                <Image url="@../images/Logo.png" />
+                            </image>
+                        </ImageView>
+                        <Label styleClass="sidebar-app-name" text="SCHOLARIS" />
+                    </children>
+                    <VBox.margin>
+                        <Insets left="40.0" top="40.0" />
+                    </VBox.margin>
+                </HBox>
+
+                <!-- Sous-titre en or -->
+                <Label styleClass="sidebar-app-subtitle" text="SCHOOL MANAGEMENT APP">
+                    <VBox.margin>
+                        <Insets left="40.0" top="6.0" />
+                    </VBox.margin>
+                </Label>
+
+                <!-- Slogan central -->
+                <VBox alignment="CENTER" VBox.vgrow="ALWAYS">
+                    <children>
+                        <TextFlow textAlignment="CENTER">
+                            <children>
+                                <Text styleClass="text-white" strokeType="OUTSIDE" strokeWidth="0.0"
+                                      text="Gérez votre établissement ">
+                                    <font><Font name="System Bold" size="26.0" /></font>
+                                </Text>
+                                <Text styleClass="text-gold" strokeType="OUTSIDE" strokeWidth="0.0"
+                                      text="intelligemment.">
+                                    <font><Font name="System Bold" size="26.0" /></font>
+                                </Text>
+                            </children>
+                            <VBox.margin>
+                                <Insets left="32.0" right="32.0" />
+                            </VBox.margin>
+                        </TextFlow>
+
+                        <!-- Description -->
+                        <Label
+                            styleClass="text-caption"
+                            text="La plateforme tout-en-un pour centraliser vos étudiants, notes, bulletins et statistiques de réussite."
+                            textAlignment="CENTER"
+                            wrapText="true">
+                            <VBox.margin>
+                                <Insets left="40.0" right="40.0" top="16.0" />
+                            </VBox.margin>
+                        </Label>
+                    </children>
+                </VBox>
+
+                <!-- Statistiques en bas du panneau -->
+                <HBox alignment="CENTER" spacing="24.0">
+                    <children>
+
+                        <!-- Stat : Étudiants -->
+                        <VBox alignment="CENTER" spacing="2.0">
+                            <children>
+                                <Label styleClass="text-gold, h2" text="248" />
+                                <Label styleClass="sidebar-section-label" text="ÉTUDIANTS" />
+                            </children>
+                        </VBox>
+
+                        <!-- Séparateur vertical -->
+                        <Region prefWidth="1.0" prefHeight="40.0" styleClass="bg-navy-mid" />
+
+                        <!-- Stat : Classes -->
+                        <VBox alignment="CENTER" spacing="2.0">
+                            <children>
+                                <Label styleClass="text-gold, h2" text="12" />
+                                <Label styleClass="sidebar-section-label" text="CLASSES" />
+                            </children>
+                        </VBox>
+
+                        <!-- Séparateur vertical -->
+                        <Region prefWidth="1.0" prefHeight="40.0" styleClass="bg-navy-mid" />
+
+                        <!-- Stat : Digitalisé -->
+                        <VBox alignment="CENTER" spacing="2.0">
+                            <children>
+                                <Label styleClass="text-gold, h2" text="100%" />
+                                <Label styleClass="sidebar-section-label" text="DIGITALISÉ" />
+                            </children>
+                        </VBox>
+
+                    </children>
+                    <VBox.margin>
+                        <Insets bottom="40.0" />
+                    </VBox.margin>
+                </HBox>
+
+            </children>
+        </VBox>
    </left>
    
    <!-- Contenu Principal -->
