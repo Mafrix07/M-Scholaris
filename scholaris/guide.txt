@@ -1,0 +1,63 @@
+========================================================================
+             SCHOLARIS - GUIDE D'INSTALLATION ET DE CONFIGURATION
+========================================================================
+
+Bonjour ! Ce guide va t'aider à configurer le projet sur ton ordinateur
+pour que nous puissions travailler ensemble sans conflit de version.
+
+------------------------------------------------------------------------
+1. RÉCUPÉRATION DU PROJET
+------------------------------------------------------------------------
+Si tu as déjà le projet, fais simplement un 'git pull'. Sinon, clone-le :
+> git clone https://github.com/Mafrix07/M-Scholaris.git
+
+IMPORTANT : Si tu avais déjà le projet, il est possible que tes fichiers 
+'database.properties' et 'app.properties' soient supprimés après le pull. 
+C'est normal, nous avons sécurisé le partage du code !
+
+------------------------------------------------------------------------
+2. CONFIGURATION LOCALE (ESSENTIEL)
+------------------------------------------------------------------------
+Nous ne partageons plus les fichiers de configuration sur GitHub pour 
+éviter que nos réglages personnels (mots de passe, base de données) 
+ne s'écrasent mutuellement.
+
+Pour chaque fichier .example, tu dois créer ta version locale :
+
+A) Fichier de Base de Données :
+   1. Va dans : src/main/resources/config/
+   2. Copie le fichier 'database.properties.example'
+   3. Renomme la copie en 'database.properties'
+   4. Ouvre-le et remplace les valeurs par les tiennes :
+      - db.url : l'URL de ta base PostgreSQL locale
+      - db.user : ton utilisateur (ex: postgres)
+      - db.password : ton mot de passe local
+
+B) Fichier d'Application :
+   1. Dans le même dossier, copie 'app.properties.example'
+   2. Renomme la copie en 'app.properties'
+   3. Tu peux laisser les valeurs par défaut ou les changer.
+
+------------------------------------------------------------------------
+3. TRAVAILLER AVEC GIT
+------------------------------------------------------------------------
+Désormais, Git ignore automatiquement :
+- Le dossier 'target/' (fichiers compilés)
+- Le dossier '.idea/' (réglages IntelliJ)
+- Les fichiers '.properties' (tes secrets locaux)
+
+Quand tu fais un 'git push', tu n'enverras que ton CODE SOURCE (.java, .fxml, .css).
+Ainsi, quand je ferai un 'git pull', mon application fonctionnera toujours 
+avec mes réglages à moi, et la tienne avec les tiens !
+
+------------------------------------------------------------------------
+4. EN CAS DE PROBLÈME
+------------------------------------------------------------------------
+- Si IntelliJ ne reconnaît pas le projet : Fais un clic droit sur 'pom.xml' 
+  puis "Add as Maven Project".
+- Si tu as une erreur de compilation : Lance un 'Maven Clean' puis 'Install'.
+- Si tu modifies la structure de la base de données : N'oublie pas de m'envoyer 
+  le script SQL (ou de le mettre dans un dossier 'sql/' du projet).
+
+Bon code !
+========================================================================
