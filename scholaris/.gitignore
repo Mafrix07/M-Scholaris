@@ -29,7 +29,7 @@ local.properties
 .factorypath
 
 # Database config (often contains local credentials)
-# src/main/resources/config/database.properties
+*.properties
 
 # OS files
 .DS_Store
