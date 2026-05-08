@@ -1,0 +1,36 @@
+# Maven
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.restore
+release.properties
+bundle.properties
+out/
+
+# IntelliJ IDEA
+.idea/
+*.iws
+*.iml
+*.ipr
+
+# Eclipse
+.metadata
+bin/
+tmp/
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+.settings/
+.classpath
+.project
+.factorypath
+
+# Database config (often contains local credentials)
+# src/main/resources/config/database.properties
+
+# OS files
+.DS_Store
+Thumbs.db
