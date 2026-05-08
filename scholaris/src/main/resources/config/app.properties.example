@@ -1,0 +1,22 @@
+# ============================================================
+#  SCHOLARIS — Configuration générale de l'application (Exemple)
+#  Copiez ce fichier et renommez-le en 'app.properties'
+# ============================================================
+
+# Application
+app.name=Scholaris
+app.version=1.0
+app.langue=fr
+
+# Établissement
+app.etablissement.nom=iP Net Institute
+app.etablissement.annee=2025
+
+# PDF (chemin de sauvegarde des bulletins)
+app.pdf.dossier=bulletins/
+
+# Appréciations (seuils de moyennes)
+app.appreciation.tres_bien=16
+app.appreciation.bien=14
+app.appreciation.assez_bien=12
+app.appreciation.passable=10

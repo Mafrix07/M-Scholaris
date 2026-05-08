@@ -1,0 +1,15 @@
+# ============================================================
+#  SCHOLARIS — Configuration base de données (Exemple)
+#  Copiez ce fichier et renommez-le en 'database.properties'
+#  Remplissez ensuite avec vos informations locales.
+# ============================================================
+
+# Connexion PostgreSQL
+db.url=jdbc:postgresql://localhost:5432/VOTRE_BASE_DE_DONNEES
+db.user=VOTRE_UTILISATEUR
+db.password=VOTRE_MOT_DE_PASSE
+db.driver=org.postgresql.Driver
+
+# Pool de connexions
+db.pool.size=5
+db.timeout=30000
