@@ -11,6 +11,7 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import com.scholaris.model.Classe;
@@ -26,64 +27,89 @@ public class SignupController {
     @FXML private TextField nomField;
     @FXML private TextField prenomField;
     @FXML private TextField emailField;
-    @FXML private TextField matriculeField;
-    @FXML private ComboBox<Classe> classeCombo;
     @FXML private DatePicker dateNaissancePicker;
+    @FXML private ComboBox<String> niveauCombo;
+    @FXML private ComboBox<String> serieCombo;
+    @FXML private VBox serieBox;
     @FXML private PasswordField passwordField;
     @FXML private PasswordField confirmPasswordField;
     @FXML private Label messageLabel;
 
     private UtilisateurDAO utilisateurDAO;
     private EtudiantDAO    etudiantDAO;
-    private ClasseDAO      classeDAO;
     private AuthService    authService;
 
     public void initialize() {
         try {
             this.utilisateurDAO = new UtilisateurDAO();
             this.etudiantDAO    = new EtudiantDAO();
-            this.classeDAO      = new ClasseDAO();
             this.authService    = new AuthService();
             
-            chargerClasses();
+            setupCombos();
         } catch (SQLException e) {
             showError("Erreur de connexion.");
         }
     }
 
-    private void chargerClasses() throws SQLException {
-        List<Classe> classes = classeDAO.trouverTous();
-        classeCombo.getItems().addAll(classes);
-        // Custom cell factory pour afficher le nom de la classe
-        classeCombo.setCellFactory(lv -> new ListCell<>() {
-            @Override
-            protected void updateItem(Classe item, boolean empty) {
-                super.updateItem(item, empty);
-                setText(empty ? "" : item.getNom());
-            }
-        });
-        classeCombo.setButtonCell(new ListCell<>() {
-            @Override
-            protected void updateItem(Classe item, boolean empty) {
-                super.updateItem(item, empty);
-                setText(empty ? "" : item.getNom());
+    private void setupCombos() {
+        // Peupler les niveaux
+        niveauCombo.getItems().addAll("6ème", "5ème", "4ème", "3ème", "2nde", "1ère", "Terminale");
+        
+        // Cacher la série par défaut
+        serieBox.setVisible(false);
+        serieBox.setManaged(false);
+
+        // Listener sur le niveau pour afficher/cacher et peupler la série
+        niveauCombo.setOnAction(e -> {
+            String niveau = niveauCombo.getValue();
+            serieCombo.getItems().clear();
+            
+            if (niveau == null) return;
+
+            switch (niveau) {
+                case "2nde":
+                    showSerie(true);
+                    serieCombo.getItems().addAll("Générale", "Technique");
+                    break;
+                case "1ère":
+                    showSerie(true);
+                    serieCombo.getItems().addAll("A", "C", "D", "G");
+                    break;
+                case "Terminale":
+                    showSerie(true);
+                    serieCombo.getItems().addAll("A", "C", "D", "G", "F");
+                    break;
+                default:
+                    showSerie(false);
+                    break;
             }
         });
     }
 
+    private void showSerie(boolean visible) {
+        serieBox.setVisible(visible);
+        serieBox.setManaged(visible);
+    }
+
     @FXML
     void handleSignup(ActionEvent event) {
-        String nom = nomField.getText();
-        String prenom = prenomField.getText();
-        String email = emailField.getText();
-        String matricule = matriculeField.getText();
-        Classe classe = classeCombo.getValue();
+        String nom = nomField.getText().trim();
+        String prenom = prenomField.getText().trim();
+        String email = emailField.getText().trim();
         String password = passwordField.getText();
         String confirm = confirmPasswordField.getText();
+        String niveau = niveauCombo.getValue();
+        String serie = serieCombo.getValue();
 
-        if (nom.isEmpty() || prenom.isEmpty() || email.isEmpty() || matricule.isEmpty() || 
-            classe == null || password.isEmpty()) {
-            showError("Veuillez remplir tous les champs.");
+        // Validations de base
+        if (nom.isEmpty() || prenom.isEmpty() || email.isEmpty() || password.isEmpty() || niveau == null) {
+            showError("Veuillez remplir tous les champs obligatoires.");
+            return;
+        }
+
+        // Validation série si visible
+        if (serieBox.isVisible() && (serie == null || serie.isEmpty())) {
+            showError("Veuillez sélectionner une série.");
             return;
         }
 
@@ -92,24 +118,40 @@ public class SignupController {
             return;
         }
 
-        if (password.length() < 6) {
-            showError("Le mot de passe doit faire au moins 6 caractères.");
+        if (password.length() < 8) {
+            showError("Le mot de passe doit faire au moins 8 caractères.");
+            return;
+        }
+
+        // Validation Email simple regex
+        if (!email.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
+            showError("Format d'email invalide.");
             return;
         }
 
         try {
-            // Vérifier si l'email existe déjà
+            // 1. Vérifier unicité email
             if (utilisateurDAO.trouverParEmail(email) != null) {
                 showError("Cet email est déjà utilisé.");
                 return;
             }
 
-            // Créer l'étudiant
+            // 2. Trouver une classe disponible
+            Classe classe = etudiantDAO.trouverClasseDisponible(niveau, serie);
+            if (classe == null) {
+                showError("Aucune classe disponible pour ce niveau. Contactez l'administration.");
+                return;
+            }
+
+            // 3. Générer matricule
+            String matricule = etudiantDAO.genererMatricule();
+
+            // 4. Créer l'objet Etudiant
             Etudiant e = new Etudiant();
             e.setNom(nom);
             e.setPrenom(prenom);
             e.setEmail(email);
-            e.setMotDePasse(authService.hacherMotDePasse(password));
+            e.setMotDePasse(authService.hacherMotDePasse(password)); // Assumé BCrypt par authService
             e.setMatricule(matricule);
             e.setClasse(classe);
             e.setActif(true);
@@ -117,24 +159,22 @@ public class SignupController {
                 e.setDateNaissance(dateNaissancePicker.getValue());
             }
 
-            // L'ajout dans EtudiantDAO.ajouter() gère déjà la transaction et l'ajout dans utilisateur
+            // 5. Insertion en base (transactionnelle dans EtudiantDAO.ajouter)
             etudiantDAO.ajouter(e);
 
-            showSuccess("Compte créé avec succès ! Redirection...");
-            
-            PauseTransition pause = new PauseTransition(Duration.seconds(2));
-            pause.setOnFinished(f -> {
-                try {
-                    handleGoToLogin(event);
-                } catch (IOException ex) {
-                    ex.printStackTrace();
-                }
-            });
-            pause.play();
+            // 6. Succès & Popup
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Inscription réussie");
+            alert.setHeaderText("Félicitations " + prenom + " !");
+            alert.setContentText("Votre compte a été créé.\nVotre matricule est : " + matricule + 
+                               "\nClasse affectée : " + classe.getNom());
+            alert.showAndWait();
 
-        } catch (SQLException e1) {
-            showError("Erreur lors de la création du compte.");
-            e1.printStackTrace();
+            handleGoToLogin(event);
+
+        } catch (SQLException | IOException ex) {
+            showError("Erreur lors de l'inscription : " + ex.getMessage());
+            ex.printStackTrace();
         }
     }
 

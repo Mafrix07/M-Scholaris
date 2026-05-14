@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox spacing="20" style="-fx-padding: 30;" styleClass="bg-page" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.scholaris.controller.ParametresController">
+    <children>
+        <Label styleClass="h1" text="Paramètres du système" />
+        
+        <TabPane tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
+            <tabs>
+                <!-- ONGLET CLASSES -->
+                <Tab text="Gestion des Classes">
+                    <content>
+                        <VBox spacing="15" style="-fx-padding: 20;">
+                            <children>
+                                <HBox spacing="10" alignment="CENTER_LEFT">
+                                    <children>
+                                        <Button text="+ Nouvelle Classe" onAction="#handleAjouterClasse" styleClass="primary-button" />
+                                        <Region HBox.hgrow="ALWAYS" />
+                                        <TextField fx:id="searchClasse" promptText="Rechercher une classe..." prefWidth="250" />
+                                    </children>
+                                </HBox>
+                                <TableView fx:id="classeTable" VBox.vgrow="ALWAYS">
+                                    <columns>
+                                        <TableColumn fx:id="colClasseNom" text="NOM" prefWidth="200" />
+                                        <TableColumn fx:id="colClasseNiveau" text="NIVEAU" prefWidth="150" />
+                                        <TableColumn fx:id="colClasseAnnee" text="ANNÉE SCOLAIRE" prefWidth="150" />
+                                        <TableColumn fx:id="colClasseActions" text="ACTIONS" prefWidth="150" />
+                                    </columns>
+                                </TableView>
+                            </children>
+                        </VBox>
+                    </content>
+                </Tab>
+                
+                <!-- ONGLET MATIÈRES -->
+                <Tab text="Gestion des Matières">
+                    <content>
+                        <VBox spacing="15" style="-fx-padding: 20;">
+                            <children>
+                                <HBox spacing="10" alignment="CENTER_LEFT">
+                                    <children>
+                                        <Button text="+ Nouvelle Matière" onAction="#handleAjouterMatiere" styleClass="primary-button" />
+                                        <Region HBox.hgrow="ALWAYS" />
+                                        <TextField fx:id="searchMatiere" promptText="Rechercher une matière..." prefWidth="250" />
+                                    </children>
+                                </HBox>
+                                <TableView fx:id="matiereTable" VBox.vgrow="ALWAYS">
+                                    <columns>
+                                        <TableColumn fx:id="colMatiereCode" text="CODE" prefWidth="100" />
+                                        <TableColumn fx:id="colMatiereNom" text="NOM" prefWidth="250" />
+                                        <TableColumn fx:id="colMatiereCoef" text="COEFFICIENT" prefWidth="100" />
+                                        <TableColumn fx:id="colMatiereActions" text="ACTIONS" prefWidth="150" />
+                                    </columns>
+                                </TableView>
+                            </children>
+                        </VBox>
+                    </content>
+                </Tab>
+            </tabs>
+        </TabPane>
+    </children>
+</VBox>

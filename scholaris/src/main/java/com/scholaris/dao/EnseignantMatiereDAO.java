@@ -26,7 +26,7 @@ public class EnseignantMatiereDAO implements IDao<EnseignantMatiere> {
 
     @Override
     public void ajouter(EnseignantMatiere em) throws SQLException {
-        String sql = "INSERT INTO enseignant_matiere (enseignant_id, matiere_id, classe_id) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO enseignant_matiere (utilisateur_id, matiere_id, classe_id) VALUES (?, ?, ?)";
         try (PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setInt(1, em.getProfesseur().getId());
             ps.setInt(2, em.getMatiere().getId());
@@ -39,7 +39,7 @@ public class EnseignantMatiereDAO implements IDao<EnseignantMatiere> {
 
     @Override
     public void modifier(EnseignantMatiere em) throws SQLException {
-        String sql = "UPDATE enseignant_matiere SET enseignant_id = ?, matiere_id = ?, classe_id = ? WHERE id = ?";
+        String sql = "UPDATE enseignant_matiere SET utilisateur_id = ?, matiere_id = ?, classe_id = ? WHERE id = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, em.getProfesseur().getId());
             ps.setInt(2, em.getMatiere().getId());
@@ -83,7 +83,7 @@ public class EnseignantMatiereDAO implements IDao<EnseignantMatiere> {
     /** Retourne toutes les affectations d'un professeur. */
     public List<EnseignantMatiere> trouverParProfesseur(int profId) throws SQLException {
         List<EnseignantMatiere> liste = new ArrayList<>();
-        String sql = "SELECT * FROM enseignant_matiere WHERE enseignant_id = ?";
+        String sql = "SELECT * FROM enseignant_matiere WHERE utilisateur_id = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, profId);
             ResultSet rs = ps.executeQuery();
@@ -108,7 +108,7 @@ public class EnseignantMatiereDAO implements IDao<EnseignantMatiere> {
         EnseignantMatiere em = new EnseignantMatiere();
         em.setId(rs.getInt("id"));
         
-        int profId = rs.getInt("enseignant_id");
+        int profId = rs.getInt("utilisateur_id");
         em.setUtilisateurId(profId);
         em.setProfesseur(professeurDAO.trouverParId(profId));
         

@@ -112,4 +112,16 @@ public class MoyenneService {
     private double arrondir(double v) {
         return Math.round(v * 100.0) / 100.0;
     }
+
+    /**
+     * Retourne la mention associée à une moyenne.
+     * Très Bien ≥16 / Bien ≥14 / Assez Bien ≥12 / Passable ≥10 / Insuffisant <10
+     */
+    public String getMention(double moyenne) {
+        if (moyenne >= 16) return "Très Bien";
+        if (moyenne >= 14) return "Bien";
+        if (moyenne >= 12) return "Assez Bien";
+        if (moyenne >= 10) return "Passable";
+        return "Insuffisant";
+    }
 }

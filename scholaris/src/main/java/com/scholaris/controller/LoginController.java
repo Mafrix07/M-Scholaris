@@ -64,14 +64,8 @@ public class LoginController {
             // Stocker l'utilisateur connecté en session
             SessionManager.getInstance().setCurrentUser(user);
 
-            // Redirection selon le rôle récupéré depuis la BDD
-            String role = user.getRole().toLowerCase();
-            switch (role) {
-                case "admin" -> NavigationService.loadView("DashboardAdmin.fxml");
-                case "enseignant" -> NavigationService.loadView("DashboardEnseignant.fxml");
-                case "etudiant" -> NavigationService.loadView("DashboardEtudiant.fxml");
-                default -> showError("Rôle inconnu : " + role);
-            }
+            // Redirection vers le layout principal (qui gère la sidebar et les vues par rôle)
+            NavigationService.loadView("MainLayout.fxml");
 
         } catch (SQLException e) {
             showError("Erreur de connexion à la base de données.");

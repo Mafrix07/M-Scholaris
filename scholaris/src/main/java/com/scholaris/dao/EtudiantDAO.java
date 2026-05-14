@@ -151,6 +151,53 @@ public class EtudiantDAO implements IDao<Etudiant> {
 
     // ── REQUÊTES SPÉCIFIQUES ──────────────────────────────
 
+    /** Génère un matricule automatique au format SCH-ANNEE-XXXXX. */
+    public String genererMatricule() throws SQLException {
+        String sql = "SELECT COUNT(*) FROM etudiant";
+        try (Statement st = conn.createStatement();
+             ResultSet rs = st.executeQuery(sql)) {
+            rs.next();
+            int count = rs.getInt(1) + 1;
+            int annee = java.time.LocalDate.now().getYear();
+            return String.format("SCH-%d-%05d", annee, count);
+        }
+    }
+
+    /** Trouve une classe disponible selon le niveau et la série choisis. */
+    public Classe trouverClasseDisponible(String niveau, String serie) throws SQLException {
+        // Le nom de la classe contient souvent le niveau et la série (ex: 'Terminale D')
+        String pattern = niveau + (serie != null && !serie.isEmpty() ? " " + serie : "");
+        int anneeScolaire = java.time.LocalDate.now().getYear();
+
+        String sql = """
+            SELECT c.id, c.nom, c.niveau, c.annee_scolaire,
+                   COUNT(e.id) AS effectif_actuel
+            FROM classe c
+            LEFT JOIN etudiant e ON e.classe_id = c.id
+            WHERE c.nom LIKE ?
+              AND c.annee_scolaire = ?
+            GROUP BY c.id, c.nom, c.niveau, c.annee_scolaire
+            HAVING COUNT(e.id) < 50
+            ORDER BY RANDOM()
+            LIMIT 1
+            """;
+
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, "%" + pattern + "%");
+            ps.setInt(2, anneeScolaire);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                Classe c = new Classe();
+                c.setId(rs.getInt("id"));
+                c.setNom(rs.getString("nom"));
+                c.setNiveau(rs.getString("niveau"));
+                c.setAnneeScolaire(rs.getInt("annee_scolaire"));
+                return c;
+            }
+        }
+        return null;
+    }
+
     /** Retourne tous les étudiants d'une classe. */
     public List<Etudiant> trouverParClasse(int classeId) throws SQLException {
         List<Etudiant> liste = new ArrayList<>();

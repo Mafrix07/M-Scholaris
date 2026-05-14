@@ -1,18 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ComboBox?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.Region?>
-<?import javafx.scene.control.TableColumn?>
-<?import javafx.scene.control.TableView?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 
-<VBox spacing="16.0" style="-fx-padding: 24;" styleClass="bg-page" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.scholaris.controller.SaisieNotesController">
+<VBox spacing="16.0" style="-fx-padding: 24;" styleClass="bg-page" stylesheets="@../css/dashboard.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.scholaris.controller.SaisieNotesController">
    <children>
-      <!-- HEADER -->
+      <!-- HEADER AVEC BOUTON ENREGISTRER -->
       <HBox alignment="CENTER_LEFT" spacing="10.0">
          <children>
             <HBox alignment="CENTER_LEFT" spacing="8.0">
@@ -22,21 +16,21 @@
                </children>
             </HBox>
             <Region HBox.hgrow="ALWAYS" />
-            <Button onAction="#handleEnregistrerTout" styleClass="primary-button" text="Enregistrer toutes les notes" />
+            <Button onAction="#handleEnregistrerTout" styleClass="btn-refresh" text="Enregistrer tout" />
          </children>
       </HBox>
 
-      <!-- SÉLECTEURS + KPI -->
-      <HBox alignment="CENTER_LEFT" spacing="12.0">
+      <!-- SÉLECTEURS ET KPI DYNAMIQUES -->
+      <HBox alignment="CENTER_LEFT" spacing="12.0" styleClass="card" style="-fx-padding: 15;">
          <children>
-            <ComboBox fx:id="classeCombo" prefWidth="150.0" promptText="Classe" />
-            <ComboBox fx:id="matiereCombo" prefWidth="150.0" promptText="Matière" />
+            <ComboBox fx:id="classeCombo" prefWidth="180.0" promptText="Choisir une classe" />
+            <ComboBox fx:id="matiereCombo" prefWidth="180.0" promptText="Choisir une matière" />
             <ComboBox fx:id="trimestreCombo" prefWidth="150.0" promptText="Trimestre" />
             <Region HBox.hgrow="ALWAYS" />
             <VBox alignment="CENTER_RIGHT">
                <children>
-                  <Label styleClass="label-tag" text="MOY. DE CLASSE" />
-                  <HBox alignment="BASELINE_LEFT" spacing="2.0">
+                  <Label styleClass="kpi-label" text="MOY. DE CLASSE" />
+                  <HBox alignment="BASELINE_RIGHT" spacing="2.0">
                      <children>
                         <Label fx:id="lblMoyenneClasse" style="-fx-font-size: 24; -fx-font-weight: bold;" styleClass="text-navy" text="0.00" />
                         <Label styleClass="text-muted" text="/20" />
@@ -48,34 +42,35 @@
          </children>
       </HBox>
 
-      <!-- TABLEAU -->
-      <TableView fx:id="notesTable" styleClass="table-view" VBox.vgrow="ALWAYS">
-         <columns>
-            <TableColumn fx:id="colMatricule" prefWidth="100.0" text="MATRICULE" />
-            <TableColumn fx:id="colNom" prefWidth="250.0" text="NOM COMPLET" />
-            <TableColumn fx:id="colNote" prefWidth="150.0" text="NOTE /20" />
-            <TableColumn fx:id="colAppreciation" prefWidth="130.0" text="APPRÉCIATION" />
-            <TableColumn fx:id="colRang" prefWidth="80.0" text="RANG" />
-            <TableColumn fx:id="colAction" prefWidth="120.0" text="ACTION" />
-         </columns>
-      </TableView>
-
-      <!-- RÉSUMÉ -->
-      <HBox alignment="CENTER_LEFT" spacing="16.0" style="-fx-padding: 12;" styleClass="bg-off-white">
+      <!-- TABLEAU DE SAISIE : S'étire verticalement -->
+      <VBox styleClass="card" VBox.vgrow="ALWAYS" style="-fx-padding: 0;">
          <children>
-            <Label styleClass="label-tag" text="RÉSUMÉ DE LA SAISIE" />
-            <Region HBox.hgrow="ALWAYS" />
+            <TableView fx:id="notesTable" VBox.vgrow="ALWAYS">
+               <columns>
+                  <TableColumn fx:id="colMatricule" minWidth="90.0" prefWidth="100.0" text="MATRICULE" />
+                  <TableColumn fx:id="colNom" minWidth="200.0" prefWidth="250.0" text="NOM COMPLET" />
+                  <TableColumn fx:id="colNote" minWidth="100.0" prefWidth="120.0" text="NOTE /20" />
+                  <TableColumn fx:id="colAppreciation" minWidth="150.0" prefWidth="150.0" text="APPRÉCIATION" />
+                  <TableColumn fx:id="colRang" minWidth="70.0" prefWidth="80.0" text="RANG" />
+                  <TableColumn fx:id="colAction" minWidth="110.0" prefWidth="120.0" text="ACTION" />
+               </columns>
+               <columnResizePolicy>
+                  <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+               </columnResizePolicy>
+            </TableView>
+         </children>
+      </VBox>
+
+      <!-- RÉSUMÉ ET ACTIONS FINALES -->
+      <HBox alignment="CENTER_LEFT" spacing="16.0" style="-fx-padding: 15;" styleClass="card">
+         <children>
+            <Label styleClass="kpi-label" text="RÉSUMÉ" />
             <Label fx:id="lblMoyResume" style="-fx-font-weight: bold;" text="Moyenne : -" />
             <Label fx:id="lblAppResume" styleClass="badge-blue" text="-" />
             <Label fx:id="lblContexteResume" styleClass="text-muted" text="Aucune donnée" />
-         </children>
-      </HBox>
-
-      <!-- ACTIONS FINALES -->
-      <HBox alignment="CENTER_RIGHT" spacing="12.0">
-         <children>
-            <Button onAction="#handleAnnuler" styleClass="secondary-button" text="Annuler les modifications" />
-            <Button onAction="#handleEnregistrerTout" styleClass="primary-button" text="Enregistrer tout" />
+            <Region HBox.hgrow="ALWAYS" />
+            <Button onAction="#handleAnnuler" style="-fx-background-color: transparent; -fx-text-fill: #E74C3C;" text="Annuler tout" />
+            <Button onAction="#handleEnregistrerTout" styleClass="btn-refresh" text="Valider la saisie" />
          </children>
       </HBox>
    </children>

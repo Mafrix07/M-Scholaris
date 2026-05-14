@@ -5,70 +5,66 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.shape.Circle?>
-<?import javafx.scene.shape.Rectangle?>
-<?import javafx.scene.text.Font?>
 
-<VBox prefWidth="220.0" spacing="10.0" styleClass="sidebar" stylesheets="@../css/style.css" VBox.vgrow="ALWAYS" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.scholaris.controller.SidebarController">
+<VBox maxWidth="230.0" minWidth="230.0" prefWidth="230.0" styleClass="sidebar" stylesheets="@../css/dashboard.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.scholaris.controller.SidebarController">
    <children>
-      <!-- EN-TÊTE -->
-      <VBox spacing="4.0">
+      <!-- LOGO SECTION -->
+      <VBox spacing="10.0">
          <children>
-            <HBox alignment="CENTER_LEFT" spacing="10.0">
+            <HBox alignment="CENTER_LEFT" spacing="15.0">
                <children>
-                  <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="36.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="36.0" />
-                  <Label text="Scholaris" textFill="WHITE">
-                     <font>
-                        <Font name="System Bold" size="16.0" />
-                     </font>
-                  </Label>
+                  <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../images/Logo.png" />
+                     </image>
+                  </ImageView>
+                  <VBox>
+                     <children>
+                        <Label styleClass="sidebar-logo-text" text="SCHOLARIS" />
+                        <Label styleClass="sidebar-subtitle" text="MANAGEMENT" />
+                     </children>
+                  </VBox>
                </children>
             </HBox>
-            <Label styleClass="text-faint" text="IP NET INSTITUTE · 2025-2026">
-               <font>
-                  <Font size="10.0" />
-               </font>
-            </Label>
          </children>
          <padding>
-            <Insets bottom="20.0" left="20.0" right="20.0" top="30.0" />
+            <Insets bottom="30.0" left="20.0" right="20.0" top="30.0" />
          </padding>
       </VBox>
 
-      <Label styleClass="text-faint" text="NAVIGATION">
+      <Label styleClass="text-faint" text="NAVIGATION PRINCIPALE">
          <VBox.margin>
-            <Insets left="20.0" top="10.0" />
+            <Insets left="20.0" bottom="5.0" />
          </VBox.margin>
-         <font>
-            <Font name="System Bold" size="10.0" />
-         </font>
       </Label>
 
-      <!-- NAVIGATION ITEMS (Container for dynamic items) -->
-      <VBox fx:id="navContainer" spacing="2.0" VBox.vgrow="ALWAYS">
+      <!-- NAVIGATION : Remplit l'espace vertical -->
+      <VBox fx:id="navContainer" spacing="5.0" VBox.vgrow="ALWAYS">
          <padding>
             <Insets left="10.0" right="10.0" />
          </padding>
-         <!-- Admin Items -->
+         
          <HBox fx:id="navAdminDashboard" onMouseClicked="#handleNavAdminDashboard" styleClass="sidebar-item">
             <children><Label text="🏠  Tableau de bord" /></children>
          </HBox>
          <HBox fx:id="navAdminEtudiants" onMouseClicked="#handleNavAdminEtudiants" styleClass="sidebar-item">
-            <children><Label text="👤  Étudiants" /></children>
+            <children><Label text="👤  Gestion Étudiants" /></children>
          </HBox>
          <HBox fx:id="navAdminSaisie" onMouseClicked="#handleNavSaisieNotes" styleClass="sidebar-item">
-            <children><Label text="✏️  Saisie des notes" /></children>
+            <children><Label text="✏️  Saisie des Notes" /></children>
          </HBox>
          <HBox fx:id="navAdminBulletins" onMouseClicked="#handleNavAdminBulletins" styleClass="sidebar-item">
-            <children><Label text="📄  Bulletins PDF" /></children>
+            <children><Label text="📄  Bulletins Scolaires" /></children>
          </HBox>
          
          <Region fx:id="adminSeparator" prefHeight="20.0" />
-         <Label fx:id="adminLabel" styleClass="text-faint" text="ADMINISTRATION">
-            <font><Font name="System Bold" size="10.0" /></font>
+         <Label fx:id="adminLabel" styleClass="text-faint" text="CONFIGURATION">
             <VBox.margin><Insets left="10.0" /></VBox.margin>
          </Label>
-         
+
          <HBox fx:id="navAdminUsers" onMouseClicked="#handleNavAdminUsers" styleClass="sidebar-item">
             <children><Label text="👥  Utilisateurs" /></children>
          </HBox>
@@ -76,55 +72,40 @@
             <children><Label text="⚙️  Paramètres" /></children>
          </HBox>
 
-         <!-- Teacher Items -->
+         <!-- Teacher items -->
          <HBox fx:id="navTeacherDashboard" onMouseClicked="#handleNavTeacherDashboard" styleClass="sidebar-item">
             <children><Label text="🏠  Tableau de bord" /></children>
          </HBox>
          <HBox fx:id="navTeacherSaisie" onMouseClicked="#handleNavSaisieNotes" styleClass="sidebar-item">
-            <children><Label text="✏️  Saisie des notes" /></children>
+            <children><Label text="✏️  Saisie des Notes" /></children>
          </HBox>
          <HBox fx:id="navTeacherMesEtudiants" onMouseClicked="#handleNavTeacherMesEtudiants" styleClass="sidebar-item">
-            <children><Label text="👤  Mes étudiants" /></children>
+            <children><Label text="👥  Mes Étudiants" /></children>
          </HBox>
 
-         <!-- Student Items -->
+         <!-- Student items -->
          <HBox fx:id="navStudentBulletin" onMouseClicked="#handleNavStudentBulletin" styleClass="sidebar-item">
-            <children><Label text="📄  Mon bulletin" /></children>
+            <children><Label text="📄  Mon Bulletin" /></children>
          </HBox>
          <HBox fx:id="navStudentNotes" onMouseClicked="#handleNavStudentNotes" styleClass="sidebar-item">
-            <children><Label text="📊  Mes notes" /></children>
+            <children><Label text="📝  Mes Notes" /></children>
+         </HBox>
+
+         <Region VBox.vgrow="ALWAYS" /> <!-- Pousse le bouton déconnexion en bas -->
+         
+         <HBox onMouseClicked="#handleLogout" spacing="10.0" styleClass="sidebar-item">
+            <children>
+               <Label styleClass="text-gold" text="🚪  Déconnexion" />
+            </children>
          </HBox>
       </VBox>
 
-      <!-- BAS DE SIDEBAR -->
-      <VBox spacing="10.0">
-         <padding>
-            <Insets bottom="20.0" left="20.0" right="20.0" top="10.0" />
-         </padding>
-         <children>
-            <HBox alignment="CENTER_LEFT" spacing="12.0">
-               <children>
-                  <Circle fx:id="userAvatar" fill="#CBD5E1" radius="18.0" stroke="TRANSPARENT" strokeType="INSIDE" />
-                  <VBox alignment="CENTER_LEFT">
-                     <children>
-                        <Label fx:id="userRoleLabel" styleClass="text-faint" text="RÔLE">
-                           <font><Font name="System Bold" size="10.0" /></font>
-                        </Label>
-                        <Label fx:id="userNameLabel" text="Nom Prénom" textFill="WHITE">
-                           <font><Font name="System Bold" size="13.0" /></font>
-                        </Label>
-                     </children>
-                  </VBox>
-               </children>
-            </HBox>
-            <HBox onMouseClicked="#handleLogout" styleClass="sidebar-item" style="-fx-padding: 5 0;">
-               <children>
-                  <Label styleClass="text-gold" text="Déconnexion →">
-                     <font><Font name="System Bold" size="11.0" /></font>
-                  </Label>
-               </children>
-            </HBox>
-         </children>
-      </VBox>
+      <!-- Profile components (Hidden but must exist for Controller) -->
+      <Circle fx:id="userAvatar" visible="false" managed="false" />
+      <Label fx:id="userRoleLabel" visible="false" managed="false" />
+      <Label fx:id="userNameLabel" visible="false" managed="false" />
    </children>
+   <padding>
+      <Insets bottom="20.0" />
+   </padding>
 </VBox>

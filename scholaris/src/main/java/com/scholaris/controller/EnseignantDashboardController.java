@@ -79,11 +79,13 @@ public class EnseignantDashboardController extends BaseController {
         double totalMoyenne = 0;
         int count = 0;
         int enAttente = 0;
+        int currentYear = java.time.LocalDate.now().getYear();
+        String currentPeriode = "Trimestre 1"; // À rendre dynamique via un ConfigService plus tard
 
         for (EnseignantMatiere em : affectations) {
             List<Etudiant> etudiants = etudiantDAO.trouverParClasse(em.getClasseId());
             for (Etudiant e : etudiants) {
-                double moy = moyenneService.calculerMoyenneMatiere(e.getId(), em.getMatiereId(), "Trimestre 1", 2025);
+                double moy = moyenneService.calculerMoyenneMatiere(e.getId(), em.getMatiereId(), currentPeriode, currentYear);
                 if (moy > 0) {
                     totalMoyenne += moy;
                     count++;
@@ -99,6 +101,9 @@ public class EnseignantDashboardController extends BaseController {
 
     private void loadMesClasses() throws SQLException {
         mesClassesContainer.getChildren().clear();
+        int currentYear = java.time.LocalDate.now().getYear();
+        String currentPeriode = "Trimestre 1";
+        
         List<EnseignantMatiere> affectations = emDAO.trouverParProfesseur(currentProf.getId());
         for (EnseignantMatiere em : affectations) {
             VBox card = new VBox(10);
@@ -110,12 +115,12 @@ public class EnseignantDashboardController extends BaseController {
             title.setStyle("-fx-font-weight: bold;");
             Region spacer = new Region();
             HBox.setHgrow(spacer, Priority.ALWAYS);
-            Label badge = new Label("T1");
+            Label badge = new Label(currentPeriode);
             badge.getStyleClass().add("badge-blue");
             header.getChildren().addAll(title, spacer, badge);
 
             List<Etudiant> etudiants = etudiantDAO.trouverParClasse(em.getClasseId());
-            List<Note> notes = noteDAO.trouverParClasseEtMatiere(em.getClasseId(), em.getMatiereId(), "Trimestre 1", 2025);
+            List<Note> notes = noteDAO.trouverParClasseEtMatiere(em.getClasseId(), em.getMatiereId(), currentPeriode, currentYear);
             double progress = etudiants.isEmpty() ? 0 : (double) notes.size() / etudiants.size();
 
             ProgressBar pb = new ProgressBar(progress);
@@ -139,7 +144,9 @@ public class EnseignantDashboardController extends BaseController {
 
     private void loadActiviteRecente() throws SQLException {
         activiteContainer.getChildren().clear();
-        List<Evenement> events = evenementDAO.trouverTous(); // Simuler activité récente
+        List<Evenement> events = evenementDAO.trouverTous(); 
+        events.sort((e1, e2) -> e2.getDateEvent().compareTo(e1.getDateEvent()));
+        
         int limit = Math.min(events.size(), 5);
         for (int i = 0; i < limit; i++) {
             Evenement ev = events.get(i);
@@ -176,7 +183,7 @@ public class EnseignantDashboardController extends BaseController {
                 super.updateItem(note, empty);
                 if (empty || note == null) {
                     setText(null);
-                    setStyle("");
+                    setGraphic(null);
                 } else {
                     setText(String.format("%.2f", note));
                     setTextFill(javafx.scene.paint.Color.RED);
@@ -187,11 +194,14 @@ public class EnseignantDashboardController extends BaseController {
 
     private void loadDifficultes() throws SQLException {
         List<EtudiantNoteDTO> list = new ArrayList<>();
+        int currentYear = java.time.LocalDate.now().getYear();
+        String currentPeriode = "Trimestre 1";
+        
         List<EnseignantMatiere> affectations = emDAO.trouverParProfesseur(currentProf.getId());
         for (EnseignantMatiere em : affectations) {
             List<Etudiant> etudiants = etudiantDAO.trouverParClasse(em.getClasseId());
             for (Etudiant e : etudiants) {
-                double moy = moyenneService.calculerMoyenneMatiere(e.getId(), em.getMatiereId(), "Trimestre 1", 2025);
+                double moy = moyenneService.calculerMoyenneMatiere(e.getId(), em.getMatiereId(), currentPeriode, currentYear);
                 if (moy > 0 && moy < 10) {
                     list.add(new EtudiantNoteDTO(e.getMatricule(), e.getNomComplet(), em.getClasse().getNom(), em.getMatiere().getNom(), moy));
                 }

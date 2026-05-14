@@ -1,12 +1,16 @@
 package com.scholaris.service;
 
+import com.itextpdf.io.image.ImageDataFactory;
+import com.itextpdf.kernel.colors.ColorConstants;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.element.Cell;
+import com.itextpdf.layout.element.Image;
 import com.itextpdf.layout.properties.TextAlignment;
+import com.itextpdf.layout.properties.UnitValue;
 import com.scholaris.dao.BulletinDAO;
 import com.scholaris.dao.EtudiantDAO;
 import com.scholaris.dao.RangDAO;
@@ -18,6 +22,7 @@ import com.scholaris.model.Matiere;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
@@ -65,7 +70,7 @@ public class BulletinService {
 
         b.setMoyenneGenerale(moyGen);
         b.setRang(rangVal);
-        b.setAppreciation(attribuerAppreciation(moyGen));
+        b.setAppreciation(moyenneService.getMention(moyGen));
         
         // Chemin du PDF
         String fileName = "Bulletin_" + e.getNom() + "_" + periode + "_" + annee + ".pdf";
@@ -82,55 +87,79 @@ public class BulletinService {
     }
 
     /**
-     * Attribution de l'appréciation automatique selon la moyenne.
-     */
-    private String attribuerAppreciation(double moyenne) {
-        if (moyenne >= 16) return "Très Bien";
-        if (moyenne >= 14) return "Bien";
-        if (moyenne >= 12) return "Assez Bien";
-        if (moyenne >= 10) return "Passable";
-        return "Insuffisant";
-    }
-
-    /**
      * Génération du fichier PDF avec iText.
      */
     private void genererPdf(Bulletin b, Rang r, String path) throws IOException, SQLException {
         PdfWriter writer = new PdfWriter(path);
         PdfDocument pdf = new PdfDocument(writer);
         Document document = new Document(pdf);
+        document.setMargins(20, 20, 20, 20);
 
-        document.add(new Paragraph("BULLETIN DE NOTES").setBold().setFontSize(18).setTextAlignment(TextAlignment.CENTER));
-        document.add(new Paragraph("Année Scolaire : " + b.getAnneeScolaire()));
-        document.add(new Paragraph("Période : " + b.getPeriode()));
-        document.add(new Paragraph("Étudiant : " + b.getEtudiant().getNomComplet() + " (" + b.getEtudiant().getMatricule() + ")"));
-        document.add(new Paragraph("Classe : " + b.getClasse().getNom()));
+        // EN-TÊTE AVEC LOGO
+        Table headerTable = new Table(UnitValue.createPercentArray(new float[]{20, 60, 20})).useAllAvailableWidth();
+        
+        try {
+            URL logoUrl = getClass().getResource("/images/Logo.png");
+            if (logoUrl != null) {
+                Image logo = new Image(ImageDataFactory.create(logoUrl));
+                logo.setWidth(60);
+                headerTable.addCell(new Cell().add(logo).setBorder(com.itextpdf.layout.borders.Border.NO_BORDER));
+            } else {
+                headerTable.addCell(new Cell().setBorder(com.itextpdf.layout.borders.Border.NO_BORDER));
+            }
+        } catch (Exception e) {
+            headerTable.addCell(new Cell().setBorder(com.itextpdf.layout.borders.Border.NO_BORDER));
+        }
+
+        Paragraph titlePara = new Paragraph();
+        titlePara.add(new Paragraph("IP NET INSTITUTE OF TECHNOLOGY").setBold().setFontSize(14).setTextAlignment(TextAlignment.CENTER));
+        titlePara.add(new Paragraph("\nRÉPUBLIQUE TOGOLAISE - TRAVAIL LIBERTÉ PATRIE").setFontSize(8).setTextAlignment(TextAlignment.CENTER));
+        titlePara.add(new Paragraph("\nBULLETIN DE NOTES").setBold().setFontSize(18).setFontColor(ColorConstants.DARK_GRAY).setTextAlignment(TextAlignment.CENTER).setMarginTop(10));
+        headerTable.addCell(new Cell().add(titlePara).setBorder(com.itextpdf.layout.borders.Border.NO_BORDER));
+        headerTable.addCell(new Cell().setBorder(com.itextpdf.layout.borders.Border.NO_BORDER));
+        
+        document.add(headerTable);
         document.add(new Paragraph("\n"));
 
-        // Table des notes
-        Table table = new Table(4);
-        table.addHeaderCell("Matière");
-        table.addHeaderCell("Coefficient");
-        table.addHeaderCell("Moyenne / 20");
-        table.addHeaderCell("Rang");
+        // INFOS ÉTUDIANT
+        Table infoTable = new Table(UnitValue.createPercentArray(new float[]{50, 50})).useAllAvailableWidth();
+        infoTable.addCell(new Cell().add(new Paragraph("Nom : " + b.getEtudiant().getNomComplet()).setBold()).setBorder(com.itextpdf.layout.borders.Border.NO_BORDER));
+        infoTable.addCell(new Cell().add(new Paragraph("Classe : " + b.getClasse().getNom()).setBold()).setBorder(com.itextpdf.layout.borders.Border.NO_BORDER));
+        infoTable.addCell(new Cell().add(new Paragraph("Matricule : " + b.getEtudiant().getMatricule())).setBorder(com.itextpdf.layout.borders.Border.NO_BORDER));
+        infoTable.addCell(new Cell().add(new Paragraph("Période : " + b.getPeriode())).setBorder(com.itextpdf.layout.borders.Border.NO_BORDER));
+        infoTable.addCell(new Cell().add(new Paragraph("Année Scolaire : " + b.getAnneeScolaire() + "-" + (b.getAnneeScolaire()+1))).setBorder(com.itextpdf.layout.borders.Border.NO_BORDER));
+        
+        document.add(infoTable);
+        document.add(new Paragraph("\n"));
+
+        // TABLEAU DES NOTES
+        Table table = new Table(UnitValue.createPercentArray(new float[]{40, 15, 20, 25})).useAllAvailableWidth();
+        table.addHeaderCell(new Cell().add(new Paragraph("MATIÈRE")).setBold().setBackgroundColor(ColorConstants.LIGHT_GRAY));
+        table.addHeaderCell(new Cell().add(new Paragraph("COEF.")).setBold().setBackgroundColor(ColorConstants.LIGHT_GRAY).setTextAlignment(TextAlignment.CENTER));
+        table.addHeaderCell(new Cell().add(new Paragraph("MOYENNE / 20")).setBold().setBackgroundColor(ColorConstants.LIGHT_GRAY).setTextAlignment(TextAlignment.CENTER));
+        table.addHeaderCell(new Cell().add(new Paragraph("APPRÉCIATION")).setBold().setBackgroundColor(ColorConstants.LIGHT_GRAY).setTextAlignment(TextAlignment.CENTER));
 
         Map<Integer, Double> moyennes = moyenneService.calculerMoyennesToutesMatieres(b.getEtudiant().getId(), b.getPeriode(), b.getAnneeScolaire());
         
         for (Map.Entry<Integer, Double> entry : moyennes.entrySet()) {
             Matiere m = matiereDAO.trouverParId(entry.getKey());
-            Rang rm = rangDAO.trouverRangMatiere(b.getEtudiant().getId(), m.getId(), b.getPeriode(), b.getAnneeScolaire());
-            
             table.addCell(new Cell().add(new Paragraph(m.getNom())));
-            table.addCell(new Cell().add(new Paragraph(String.valueOf(m.getCoefficient()))));
-            table.addCell(new Cell().add(new Paragraph(String.valueOf(entry.getValue()))));
-            table.addCell(new Cell().add(new Paragraph(rm != null ? String.valueOf(rm.getRang()) : "-")));
+            table.addCell(new Cell().add(new Paragraph(String.valueOf(m.getCoefficient()))).setTextAlignment(TextAlignment.CENTER));
+            table.addCell(new Cell().add(new Paragraph(String.format("%.2f", entry.getValue()))).setBold().setTextAlignment(TextAlignment.CENTER));
+            table.addCell(new Cell().add(new Paragraph(moyenneService.getMention(entry.getValue()))).setTextAlignment(TextAlignment.CENTER));
         }
         document.add(table);
 
         document.add(new Paragraph("\n"));
-        document.add(new Paragraph("MOYENNE GÉNÉRALE : " + b.getMoyenneGenerale() + " / 20").setBold());
-        document.add(new Paragraph("RANG : " + (b.getRang() > 0 ? b.getRang() + " / " + (r != null ? r.getEffectif() : "?") : "-")));
-        document.add(new Paragraph("APPRÉCIATION : " + b.getAppreciation()).setItalic());
+
+        // RÉSUMÉ FINAL
+        Table footerTable = new Table(UnitValue.createPercentArray(new float[]{60, 40})).useAllAvailableWidth();
+        footerTable.addCell(new Cell().add(new Paragraph("MOYENNE GÉNÉRALE : " + String.format("%.2f", b.getMoyenneGenerale()) + " / 20").setBold().setFontSize(14)).setBorder(com.itextpdf.layout.borders.Border.NO_BORDER));
+        footerTable.addCell(new Cell().add(new Paragraph("RANG : " + (b.getRang() > 0 ? b.getRang() + " / " + (r != null ? r.getEffectif() : "?") : "-")).setBold()).setBorder(com.itextpdf.layout.borders.Border.NO_BORDER));
+        footerTable.addCell(new Cell().add(new Paragraph("APPRÉCIATION : " + b.getAppreciation()).setItalic()).setBorder(com.itextpdf.layout.borders.Border.NO_BORDER));
+        footerTable.addCell(new Cell().add(new Paragraph("Signature Direction")).setTextAlignment(TextAlignment.CENTER).setBorder(com.itextpdf.layout.borders.Border.NO_BORDER).setMarginTop(20));
+
+        document.add(footerTable);
 
         document.close();
     }

@@ -1,0 +1,114 @@
+/* ==========================================================================
+   SCHOLARIS — SIGNUP STYLESHEET
+   Charte graphique : Navy #1B2A6B | Gold #C9A84C | White #FFFFFF
+   ========================================================================== */
+
+.root {
+    -fx-font-family: "Segoe UI", "System", sans-serif;
+    -fx-font-size: 14px;
+    -fx-background-color: #FFFFFF;
+}
+
+/* PANNEAU GAUCHE (BRANDING) */
+.branding-section {
+    -fx-background-color: #1B2A6B;
+}
+
+.branding-title {
+    -fx-font-size: 48px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #FFFFFF;
+}
+
+.branding-subtitle {
+    -fx-font-size: 18px;
+    -fx-text-fill: #C9A84C;
+}
+
+/* FORMULAIRE SECTION */
+.scroll-pane {
+    -fx-background-color: transparent;
+    -fx-background: #FFFFFF;
+    -fx-border-color: transparent;
+}
+
+.scroll-pane .viewport {
+    -fx-background-color: transparent;
+}
+
+.form-container {
+    -fx-background-color: #FFFFFF;
+}
+
+.h1 {
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1B2A6B;
+}
+
+.label {
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #4A4A6A;
+}
+
+/* INPUTS */
+.text-field, .password-field, .combo-box, .date-picker {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #D1D5DB;
+    -fx-border-width: 1;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-padding: 10 14;
+    -fx-font-size: 14px;
+}
+
+.text-field:focused, .password-field:focused, .combo-box:focused, .date-picker:focused {
+    -fx-border-color: #1B2A6B;
+    -fx-border-width: 1.5;
+    -fx-effect: dropshadow(three-pass-box, rgba(27, 42, 107, 0.1), 5, 0, 0, 0);
+}
+
+.combo-box .list-cell {
+    -fx-text-fill: #1B2A6B;
+}
+
+/* BOUTONS */
+.primary-button {
+    -fx-background-color: #1B2A6B;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-weight: bold;
+    -fx-font-size: 16px;
+    -fx-background-radius: 8;
+    -fx-padding: 14 20;
+    -fx-cursor: hand;
+}
+
+.primary-button:hover {
+    -fx-background-color: #2c3e8c;
+    -fx-effect: dropshadow(three-pass-box, rgba(27, 42, 107, 0.3), 10, 0, 0, 3);
+}
+
+.button-link {
+    -fx-text-fill: #1B2A6B;
+    -fx-font-weight: bold;
+    -fx-underline: false;
+}
+
+.button-link:hover {
+    -fx-text-fill: #C9A84C;
+    -fx-underline: true;
+}
+
+.message-label {
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+}
+
+.message-error {
+    -fx-text-fill: #E74C3C;
+}
+
+.message-success {
+    -fx-text-fill: #27AE60;
+}

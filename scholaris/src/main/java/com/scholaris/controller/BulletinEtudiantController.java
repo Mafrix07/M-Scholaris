@@ -85,29 +85,45 @@ public class BulletinEtudiantController extends BaseController {
         if (currentEtudiant == null) return;
         String trimestre = trimestreCombo.getValue();
         if (trimestre == null) trimestre = "Trimestre I";
+        int year = java.time.LocalDate.now().getYear();
 
         try {
             lblNomComplet.setText(currentEtudiant.getNomComplet());
             lblMatricule.setText(currentEtudiant.getMatricule());
             lblClasse.setText(currentEtudiant.getClasse().getNom());
-            lblPeriode.setText(trimestre + " · 2025");
+            lblPeriode.setText(trimestre + " · " + year);
             lblTrimestreBadge.setText(trimestre);
             
-            double moyGen = moyenneService.calculerMoyenneGenerale(currentEtudiant.getId(), trimestre, 2025);
+            double moyGen = moyenneService.calculerMoyenneGenerale(currentEtudiant.getId(), trimestre, year);
             lblMoyGeneral.setText(String.format("%.2f", moyGen));
-            String app = getAppreciation(moyGen);
+            String app = moyenneService.getMention(moyGen);
             lblAppGeneral.setText(app);
             lblAppGeneral.getStyleClass().setAll("badge", getBadgeClass(app));
             
+            // Récupérer le rang
+            var rangObj = new com.scholaris.dao.RangDAO().trouverRangGeneral(currentEtudiant.getId(), trimestre, year);
+            if (rangObj != null) {
+                lblRang.setText(rangObj.getRang() + " / " + rangObj.getEffectif());
+            } else {
+                lblRang.setText("- / -");
+            }
+            
             ObservableList<BulletinController.BulletinRow> rows = FXCollections.observableArrayList();
-            Map<Integer, Double> moyennes = moyenneService.calculerMoyennesToutesMatieres(currentEtudiant.getId(), trimestre, 2025);
+            Map<Integer, Double> moyennes = moyenneService.calculerMoyennesToutesMatieres(currentEtudiant.getId(), trimestre, year);
             for (Map.Entry<Integer, Double> entry : moyennes.entrySet()) {
                 Matiere m = matiereDAO.trouverParId(entry.getKey());
                 BulletinController.BulletinRow row = new BulletinController.BulletinRow();
                 row.matiere = m.getNom();
                 row.note = entry.getValue();
-                row.moyClasse = 12.5; // TODO
-                row.appreciation = getAppreciation(row.note);
+                
+                // Moyenne classe réelle
+                double moyCls = 0;
+                var listMoy = new com.scholaris.dao.NoteDAO().getMoyennesParMatiere(currentEtudiant.getClasse().getId(), m.getId(), trimestre, year);
+                if (!listMoy.isEmpty()) {
+                    moyCls = listMoy.stream().mapToDouble(d -> d[1]).average().orElse(0);
+                }
+                row.moyClasse = moyCls;
+                row.appreciation = moyenneService.getMention(row.note);
                 rows.add(row);
             }
             bulletinTable.setItems(rows);
@@ -115,14 +131,6 @@ public class BulletinEtudiantController extends BaseController {
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
-    }
-
-    private String getAppreciation(double v) {
-        if (v >= 16) return "Très Bien";
-        if (v >= 14) return "Bien";
-        if (v >= 12) return "Assez Bien";
-        if (v >= 10) return "Passable";
-        return "Insuffisant";
     }
 
     private String getBadgeClass(String app) {
@@ -138,6 +146,7 @@ public class BulletinEtudiantController extends BaseController {
     private void handleTelecharger() {
         if (currentEtudiant == null) return;
         String trimestre = trimestreCombo.getValue();
+        int year = java.time.LocalDate.now().getYear();
 
         FileChooser chooser = new FileChooser();
         chooser.setInitialFileName("Bulletin_" + currentEtudiant.getMatricule() + "_" + trimestre.replace(" ", "") + ".pdf");
@@ -146,7 +155,10 @@ public class BulletinEtudiantController extends BaseController {
         
         if (file != null) {
             try {
-                bulletinService.genererEtSauvegarderBulletin(currentEtudiant.getId(), trimestre, 2025);
+                // S'assurer que les rangs sont calculés avant (optionnel mais recommandé)
+                // new com.scholaris.service.RangService().calculerRangsGeneraux(currentEtudiant.getClasse().getId(), trimestre, year);
+                
+                bulletinService.genererEtSauvegarderBulletin(currentEtudiant.getId(), trimestre, year);
                 showAlert(Alert.AlertType.INFORMATION, "Succès", "Bulletin téléchargé avec succès !");
             } catch (SQLException | IOException ex) {
                 ex.printStackTrace();

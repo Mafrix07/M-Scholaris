@@ -34,3 +34,10 @@ local.properties
 # OS files
 .DS_Store
 Thumbs.db
+
+# Build artifacts & executables
+dist/
+*.exe
+icon.ico
+dependency-reduced-pom.xml
+

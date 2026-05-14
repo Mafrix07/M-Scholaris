@@ -1,0 +1,147 @@
+/* ==========================================================================
+   SCHOLARIS — LOGIN STYLESHEET
+   Charte graphique : Navy #1B2A6B | Gold #C9A84C | White #FFFFFF
+   ========================================================================== */
+
+.root {
+    -fx-font-family: "Segoe UI", "System", sans-serif;
+    -fx-font-size: 14px;
+    -fx-background-color: #F4F6FA;
+}
+
+/* PANNEAU GAUCHE (SIDEBAR) */
+.sidebar {
+    -fx-background-color: #1B2A6B;
+}
+
+.sidebar-app-name {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #FFFFFF;
+}
+
+.sidebar-app-subtitle {
+    -fx-font-size: 12px;
+    -fx-font-weight: 600;
+    -fx-text-fill: #C9A84C;
+}
+
+.text-white {
+    -fx-fill: #FFFFFF;
+}
+
+.text-gold {
+    -fx-fill: #C9A84C;
+}
+
+.text-caption {
+    -fx-font-size: 13px;
+    -fx-text-fill: #FFFFFF;
+    -fx-opacity: 0.8;
+}
+
+.h2-gold {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #C9A84C;
+}
+
+.sidebar-section-label {
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #FFFFFF;
+    -fx-opacity: 0.7;
+}
+
+.bg-navy-mid {
+    -fx-background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* PANNEAU DROIT (FORMULAIRE) */
+.bg-off-white {
+    -fx-background-color: #F4F6FA;
+}
+
+.card {
+    -fx-background-color: #FFFFFF;
+    -fx-background-radius: 10;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 15, 0, 0, 5);
+    -fx-padding: 40;
+}
+
+.h2 {
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1B2A6B;
+}
+
+.label-tag {
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #4A4A6A;
+}
+
+.text-field-container {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #D1D5DB;
+    -fx-border-width: 1;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-padding: 8 12;
+}
+
+.text-field-container:focused-within {
+    -fx-border-color: #1B2A6B;
+    -fx-border-width: 1.5;
+}
+
+.text-secondary {
+    -fx-text-fill: #4A4A6A;
+}
+
+.primary-button {
+    -fx-background-color: #1B2A6B;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+    -fx-transition: all 0.3s;
+}
+
+.primary-button:hover {
+    -fx-background-color: #2c3e8c;
+    -fx-effect: dropshadow(three-pass-box, rgba(27, 42, 107, 0.3), 10, 0, 0, 3);
+}
+
+.outline-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #1B2A6B;
+    -fx-font-size: 12px;
+    -fx-cursor: hand;
+}
+
+.outline-button:hover {
+    -fx-text-fill: #C9A84C;
+}
+
+.btn-text-blue {
+    -fx-background-color: transparent;
+    -fx-text-fill: #1B2A6B;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+}
+
+.btn-text-blue:hover {
+    -fx-text-fill: #C9A84C;
+    -fx-underline: true;
+}
+
+.alert-error {
+    -fx-text-fill: #E74C3C;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+
+.separator {
+    -fx-background-color: #E5E7EB;
+}

@@ -14,6 +14,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 
+import javafx.scene.input.MouseEvent;
 import java.io.IOException;
 
 public class SidebarController {
@@ -39,6 +40,7 @@ public class SidebarController {
 
     @FXML
     public void initialize() {
+        System.out.println("SidebarController: initialisation...");
         Utilisateur user = SessionManager.getInstance().getCurrentUser();
         if (user != null) {
             userNameLabel.setText(user.getNom() + " " + user.getPrenom());
@@ -47,82 +49,100 @@ public class SidebarController {
             // Avatar color
             String name = user.getNom() + user.getPrenom();
             Color c = Color.hsb((name.hashCode() & 0xFF) * 360.0 / 255, 0.5, 0.7);
-            userAvatar.setFill(c);
+            if (userAvatar != null) {
+                userAvatar.setFill(c);
+            }
 
             configureVisibility(user.getRole().toLowerCase());
+        } else {
+            System.err.println("SidebarController: Utilisateur non trouvé en session !");
         }
     }
 
     public void setMainController(MainLayoutController mainController) {
         this.mainController = mainController;
+        System.out.println("SidebarController: MainController lié.");
     }
 
     private void configureVisibility(String role) {
-        // Reset visibility
-        navAdminDashboard.setManaged(false); navAdminDashboard.setVisible(false);
-        navAdminEtudiants.setManaged(false); navAdminEtudiants.setVisible(false);
-        navAdminSaisie.setManaged(false); navAdminSaisie.setVisible(false);
-        navAdminBulletins.setManaged(false); navAdminBulletins.setVisible(false);
-        navAdminUsers.setManaged(false); navAdminUsers.setVisible(false);
-        navAdminParams.setManaged(false); navAdminParams.setVisible(false);
-        adminSeparator.setManaged(false); adminSeparator.setVisible(false);
-        adminLabel.setManaged(false); adminLabel.setVisible(false);
+        System.out.println("SidebarController: Configuration de la visibilité pour le rôle " + role);
+        // Reset visibility (null checks added for safety)
+        if (navAdminDashboard != null) {
+            navAdminDashboard.setManaged(false); navAdminDashboard.setVisible(false);
+            navAdminEtudiants.setManaged(false); navAdminEtudiants.setVisible(false);
+            navAdminSaisie.setManaged(false); navAdminSaisie.setVisible(false);
+            navAdminBulletins.setManaged(false); navAdminBulletins.setVisible(false);
+            navAdminUsers.setManaged(false); navAdminUsers.setVisible(false);
+            navAdminParams.setManaged(false); navAdminParams.setVisible(false);
+            adminSeparator.setManaged(false); adminSeparator.setVisible(false);
+            adminLabel.setManaged(false); adminLabel.setVisible(false);
+        }
 
-        navTeacherDashboard.setManaged(false); navTeacherDashboard.setVisible(false);
-        navTeacherSaisie.setManaged(false); navTeacherSaisie.setVisible(false);
-        navTeacherMesEtudiants.setManaged(false); navTeacherMesEtudiants.setVisible(false);
+        if (navTeacherDashboard != null) {
+            navTeacherDashboard.setManaged(false); navTeacherDashboard.setVisible(false);
+            navTeacherSaisie.setManaged(false); navTeacherSaisie.setVisible(false);
+            navTeacherMesEtudiants.setManaged(false); navTeacherMesEtudiants.setVisible(false);
+        }
 
-        navStudentBulletin.setManaged(false); navStudentBulletin.setVisible(false);
-        navStudentNotes.setManaged(false); navStudentNotes.setVisible(false);
+        if (navStudentBulletin != null) {
+            navStudentBulletin.setManaged(false); navStudentBulletin.setVisible(false);
+            navStudentNotes.setManaged(false); navStudentNotes.setVisible(false);
+        }
 
         switch (role) {
             case "admin":
-                navAdminDashboard.setManaged(true); navAdminDashboard.setVisible(true);
-                navAdminEtudiants.setManaged(true); navAdminEtudiants.setVisible(true);
-                navAdminSaisie.setManaged(true); navAdminSaisie.setVisible(true);
-                navAdminBulletins.setManaged(true); navAdminBulletins.setVisible(true);
-                navAdminUsers.setManaged(true); navAdminUsers.setVisible(true);
-                navAdminParams.setManaged(true); navAdminParams.setVisible(true);
-                adminSeparator.setManaged(true); adminSeparator.setVisible(true);
-                adminLabel.setManaged(true); adminLabel.setVisible(true);
+                if (navAdminDashboard != null) {
+                    navAdminDashboard.setManaged(true); navAdminDashboard.setVisible(true);
+                    navAdminEtudiants.setManaged(true); navAdminEtudiants.setVisible(true);
+                    navAdminSaisie.setManaged(true); navAdminSaisie.setVisible(true);
+                    navAdminBulletins.setManaged(true); navAdminBulletins.setVisible(true);
+                    navAdminUsers.setManaged(true); navAdminUsers.setVisible(true);
+                    navAdminParams.setManaged(true); navAdminParams.setVisible(true);
+                    adminSeparator.setManaged(true); adminSeparator.setVisible(true);
+                    adminLabel.setManaged(true); adminLabel.setVisible(true);
+                }
                 break;
             case "enseignant":
-                navTeacherDashboard.setManaged(true); navTeacherDashboard.setVisible(true);
-                navTeacherSaisie.setManaged(true); navTeacherSaisie.setVisible(true);
-                navTeacherMesEtudiants.setManaged(true); navTeacherMesEtudiants.setVisible(true);
+                if (navTeacherDashboard != null) {
+                    navTeacherDashboard.setManaged(true); navTeacherDashboard.setVisible(true);
+                    navTeacherSaisie.setManaged(true); navTeacherSaisie.setVisible(true);
+                    navTeacherMesEtudiants.setManaged(true); navTeacherMesEtudiants.setVisible(true);
+                }
                 break;
             case "etudiant":
-                navStudentBulletin.setManaged(true); navStudentBulletin.setVisible(true);
-                navStudentNotes.setManaged(true); navStudentNotes.setVisible(true);
+                if (navStudentBulletin != null) {
+                    navStudentBulletin.setManaged(true); navStudentBulletin.setVisible(true);
+                    navStudentNotes.setManaged(true); navStudentNotes.setVisible(true);
+                }
                 break;
         }
     }
 
-    @FXML private void handleNavAdminDashboard() { load("/fxml/DashboardAdminView.fxml", navAdminDashboard); }
-    @FXML private void handleNavAdminEtudiants() { load("/fxml/EtudiantView.fxml", navAdminEtudiants); }
-    @FXML private void handleNavSaisieNotes() { load("/fxml/SaisieNotesView.fxml", null); } // Shared
-    @FXML private void handleNavAdminBulletins() { load("/fxml/BulletinView.fxml", navAdminBulletins); }
-    @FXML private void handleNavAdminUsers() { load("/fxml/UtilisateursView.fxml", navAdminUsers); }
-    @FXML private void handleNavAdminParams() { load("/fxml/ParametresView.fxml", navAdminParams); }
+    @FXML private void handleNavAdminDashboard(MouseEvent event) { load("/fxml/DashboardAdminView.fxml", navAdminDashboard); }
+    @FXML private void handleNavAdminEtudiants(MouseEvent event) { load("/fxml/EtudiantView.fxml", navAdminEtudiants); }
+    @FXML private void handleNavSaisieNotes(MouseEvent event) { load("/fxml/SaisieNotesView.fxml", navAdminSaisie); }
+    @FXML private void handleNavAdminBulletins(MouseEvent event) { load("/fxml/BulletinView.fxml", navAdminBulletins); }
+    @FXML private void handleNavAdminUsers(MouseEvent event) { load("/fxml/UtilisateursView.fxml", navAdminUsers); }
+    @FXML private void handleNavAdminParams(MouseEvent event) { load("/fxml/ParametresView.fxml", navAdminParams); }
 
-    @FXML private void handleNavTeacherDashboard() { load("/fxml/EnseignantDashboardView.fxml", navTeacherDashboard); }
-    @FXML private void handleNavTeacherMesEtudiants() { load("/fxml/MesEtudiantsView.fxml", navTeacherMesEtudiants); }
+    @FXML private void handleNavTeacherDashboard(MouseEvent event) { load("/fxml/EnseignantDashboardView.fxml", navTeacherDashboard); }
+    @FXML private void handleNavTeacherMesEtudiants(MouseEvent event) { load("/fxml/EtudiantView.fxml", navTeacherMesEtudiants); }
 
-    @FXML private void handleNavStudentBulletin() { load("/fxml/BulletinEtudiantView.fxml", navStudentBulletin); }
-    @FXML private void handleNavStudentNotes() { load("/fxml/MesNotesView.fxml", navStudentNotes); }
+    @FXML private void handleNavStudentBulletin(MouseEvent event) { load("/fxml/BulletinEtudiantView.fxml", navStudentBulletin); }
+    @FXML private void handleNavStudentNotes(MouseEvent event) { load("/fxml/MesNotesView.fxml", navStudentNotes); }
 
     private void load(String fxml, HBox item) {
+        System.out.println("SidebarController: Demande de chargement de la vue " + fxml);
         if (mainController != null) {
             mainController.loadView(fxml);
             updateActiveStyle(item);
         } else {
-            // If Sidebar is included in MainLayout.fxml, it will get the controller later or we need another way
-            // Actually Sidebar.fxml is included in MainLayout.fxml. 
-            // We need a way to link them.
+            System.err.println("SidebarController: Impossible de charger la vue, MainController est NULL !");
         }
     }
 
     private void updateActiveStyle(HBox activeItem) {
+        if (navContainer == null) return;
         navContainer.getChildren().forEach(node -> {
             if (node instanceof HBox) node.getStyleClass().remove("sidebar-item-active");
         });
@@ -130,7 +150,8 @@ public class SidebarController {
     }
 
     @FXML
-    private void handleLogout() throws IOException {
+    private void handleLogout(MouseEvent event) throws IOException {
+        System.out.println("SidebarController: Déconnexion...");
         SessionManager.getInstance().logout();
         Parent root = FXMLLoader.load(getClass().getResource("/fxml/Login.fxml"));
         Stage stage = (Stage) navContainer.getScene().getWindow();

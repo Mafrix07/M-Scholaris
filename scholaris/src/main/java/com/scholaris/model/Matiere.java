@@ -57,5 +57,6 @@ public class Matiere {
 
 
 
-    @Override public String toString() { return "Matiere{code='" + code + "', nom='" + nom + "', coef=" + coefficient + "}"; }
+    @Override
+    public String toString() { return code + " - " + nom; }
 }

@@ -60,19 +60,27 @@ public class MesNotesController extends BaseController {
         if (currentEtudiant == null) return;
         String trimestre = trimestreCombo.getValue();
         if (trimestre == null) trimestre = "Trimestre I";
+        int year = java.time.LocalDate.now().getYear();
 
         try {
             notesGrid.getChildren().clear();
-            double moyGen = moyenneService.calculerMoyenneGenerale(currentEtudiant.getId(), trimestre, 2025);
+            double moyGen = moyenneService.calculerMoyenneGenerale(currentEtudiant.getId(), trimestre, year);
             lblMoyGen.setText(String.format("%.2f", moyGen));
             lblMoyBadge.setText(String.format("Moyenne : %.2f", moyGen));
-            lblTrimestre.setText(trimestre + " · 2025-2026");
+            lblTrimestre.setText(trimestre + " · " + year + "-" + (year+1));
 
-            Map<Integer, Double> moyennes = moyenneService.calculerMoyennesToutesMatieres(currentEtudiant.getId(), trimestre, 2025);
+            Map<Integer, Double> moyennes = moyenneService.calculerMoyennesToutesMatieres(currentEtudiant.getId(), trimestre, year);
             int row = 0, col = 0;
             for (Map.Entry<Integer, Double> entry : moyennes.entrySet()) {
                 Matiere m = matiereDAO.trouverParId(entry.getKey());
-                VBox card = createMatiereCard(m, entry.getValue());
+                // Calculer moyenne classe pour cette matière
+                double moyClasse = 0;
+                var listMoy = new com.scholaris.dao.NoteDAO().getMoyennesParMatiere(currentEtudiant.getClasse().getId(), m.getId(), trimestre, year);
+                if (!listMoy.isEmpty()) {
+                    moyClasse = listMoy.stream().mapToDouble(d -> d[1]).average().orElse(0);
+                }
+                
+                VBox card = createMatiereCard(m, entry.getValue(), moyClasse);
                 notesGrid.add(card, col, row);
                 col++;
                 if (col > 1) { col = 0; row++; }
@@ -82,7 +90,7 @@ public class MesNotesController extends BaseController {
         }
     }
 
-    private VBox createMatiereCard(Matiere m, double note) {
+    private VBox createMatiereCard(Matiere m, double note, double moyClasse) {
         VBox card = new VBox(8);
         card.getStyleClass().add("card");
         card.setStyle("-fx-padding: 20;");
@@ -103,10 +111,11 @@ public class MesNotesController extends BaseController {
         base.getStyleClass().add("text-muted");
         noteBox.getChildren().addAll(noteLabel, base);
 
-        Label appreciation = new Label(getAppreciation(note));
-        appreciation.getStyleClass().addAll("badge", getBadgeClass(getAppreciation(note)));
+        String mention = moyenneService.getMention(note);
+        Label appreciation = new Label(mention);
+        appreciation.getStyleClass().addAll("badge", getBadgeClass(mention));
 
-        Label moyClasseInfo = new Label("Moy. classe : 12.50"); // TODO
+        Label moyClasseInfo = new Label(String.format("Moy. classe : %.2f", moyClasse));
         moyClasseInfo.getStyleClass().add("text-muted");
         moyClasseInfo.setStyle("-fx-font-size: 12;");
 
@@ -120,20 +129,12 @@ public class MesNotesController extends BaseController {
         Label labelMoyClasse = new Label("Moy. classe");
         labelMoyClasse.getStyleClass().add("text-faint");
         labelMoyClasse.setStyle("-fx-font-size: 10;");
-        ProgressBar pbMoy = new ProgressBar(12.5 / 20.0);
+        ProgressBar pbMoy = new ProgressBar(moyClasse / 20.0);
         pbMoy.setMaxWidth(Double.MAX_VALUE);
         pbMoy.getStyleClass().add("progress-bar-gray");
 
         card.getChildren().addAll(name, noteBox, appreciation, moyClasseInfo, labelTaNote, pbNote, labelMoyClasse, pbMoy);
         return card;
-    }
-
-    private String getAppreciation(double v) {
-        if (v >= 16) return "Très Bien";
-        if (v >= 14) return "Bien";
-        if (v >= 12) return "Assez Bien";
-        if (v >= 10) return "Passable";
-        return "Insuffisant";
     }
 
     private String getBadgeClass(String app) {

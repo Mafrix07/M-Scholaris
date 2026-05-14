@@ -71,7 +71,7 @@ public class Classe {
     }
 
     @Override
-    public String toString() { return "Classe{nom='" + nom + "', niveau='" + niveau + "', annee=" + anneeScolaire + "}"; }
+    public String toString() { return nom; }
 }
 
 

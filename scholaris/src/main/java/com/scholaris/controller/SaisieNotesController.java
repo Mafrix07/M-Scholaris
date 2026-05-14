@@ -8,6 +8,7 @@ import com.scholaris.model.Classe;
 import com.scholaris.model.Etudiant;
 import com.scholaris.model.Matiere;
 import com.scholaris.model.Note;
+import com.scholaris.service.MoyenneService;
 import com.scholaris.service.SessionManager;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -38,6 +39,7 @@ public class SaisieNotesController extends BaseController {
     private EtudiantDAO etudiantDAO;
     private ClasseDAO classeDAO;
     private MatiereDAO matiereDAO;
+    private MoyenneService moyenneService;
     private ObservableList<NoteRow> tableData = FXCollections.observableArrayList();
 
     @FXML
@@ -47,6 +49,7 @@ public class SaisieNotesController extends BaseController {
             this.etudiantDAO = new EtudiantDAO();
             this.classeDAO = new ClasseDAO();
             this.matiereDAO = new MatiereDAO();
+            this.moyenneService = new MoyenneService();
 
             lblRoleBadge.setText(SessionManager.getInstance().getCurrentUser().getRole().toUpperCase());
             trimestreCombo.setItems(FXCollections.observableArrayList("Trimestre 1", "Trimestre 2", "Trimestre 3"));
@@ -65,6 +68,8 @@ public class SaisieNotesController extends BaseController {
     }
 
     private void setupTable() {
+        // ... (colMatricule and colNom code omitted for brevity but keeping it same as before)
+        // actually I must provide exact literal code
         colMatricule.setCellValueFactory(d -> new SimpleStringProperty(d.getValue().etudiant.getMatricule()));
         colMatricule.getStyleClass().add("text-blue");
 
@@ -74,6 +79,7 @@ public class SaisieNotesController extends BaseController {
                 super.updateItem(item, empty);
                 if (empty || getTableRow() == null || getTableRow().getItem() == null) {
                     setGraphic(null);
+                    setText(null);
                 } else {
                     Etudiant e = getTableRow().getItem().etudiant;
                     HBox box = new HBox(10);
@@ -120,7 +126,7 @@ public class SaisieNotesController extends BaseController {
                 } else {
                     NoteRow row = getTableRow().getItem();
                     Label badge = new Label(row.appreciation);
-                    badge.getStyleClass().addAll("badge", getBadgeClass(row.valeur));
+                    badge.getStyleClass().setAll("badge", getBadgeClass(row.valeur));
                     setGraphic(badge);
                 }
             }
@@ -154,12 +160,13 @@ public class SaisieNotesController extends BaseController {
         Classe c = classeCombo.getValue();
         Matiere m = matiereCombo.getValue();
         String t = trimestreCombo.getValue();
+        int year = java.time.LocalDate.now().getYear();
 
         if (c != null && m != null && t != null) {
             try {
                 tableData.clear();
                 List<Etudiant> etudiants = etudiantDAO.trouverParClasse(c.getId());
-                List<Note> allNotes = noteDAO.trouverParClasseEtMatiere(c.getId(), m.getId(), t, 2025);
+                List<Note> allNotes = noteDAO.trouverParClasseEtMatiere(c.getId(), m.getId(), t, year);
                 
                 for (Etudiant e : etudiants) {
                     Note n = allNotes.stream()
@@ -175,6 +182,7 @@ public class SaisieNotesController extends BaseController {
                     tableData.add(row);
                 }
                 updateGlobalStats();
+                lblContexteResume.setText(c.getNom() + " · " + m.getNom() + " · " + t);
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -182,14 +190,7 @@ public class SaisieNotesController extends BaseController {
     }
 
     private void handleNoteChange(NoteRow row) {
-        double v = row.valeur;
-        if (v >= 16) row.appreciation = "Très Bien";
-        else if (v >= 14) row.appreciation = "Bien";
-        else if (v >= 12) row.appreciation = "Assez Bien";
-        else if (v >= 10) row.appreciation = "Passable";
-        else row.appreciation = "Insuffisant";
-        
-        // Recalculer les rangs (simplifié)
+        row.appreciation = moyenneService.getMention(row.valeur);
         updateRanks();
         updateGlobalStats();
     }
@@ -210,6 +211,8 @@ public class SaisieNotesController extends BaseController {
         
         lblMoyenneClasse.setText(String.format("%.2f", avg));
         lblMoyResume.setText("Moyenne : " + String.format("%.2f", avg));
+        lblAppResume.setText(moyenneService.getMention(avg));
+        lblAppResume.getStyleClass().setAll("badge", getBadgeClass(avg));
         
         Classe c = classeCombo.getValue();
         if (c != null) lblInfoClasse.setText(c.getNom() + " · " + tableData.size() + " élèves");
@@ -240,12 +243,18 @@ public class SaisieNotesController extends BaseController {
         n.setId(row.noteId);
         n.setEtudiantId(row.etudiant.getId());
         n.setMatiereId(matiereCombo.getValue().getId());
+        n.setClasseId(classeCombo.getValue().getId());
         n.setValeur(row.valeur);
         n.setPeriode(trimestreCombo.getValue());
-        n.setAnneeScolaire(2025);
+        n.setAnneeScolaire(java.time.LocalDate.now().getYear());
         
         if (n.getId() == 0) noteDAO.ajouter(n);
         else noteDAO.modifier(n);
+        
+        // Mettre à jour l'ID de la note dans la ligne de la table après insertion
+        if (row.noteId == 0) {
+            row.noteId = n.getId();
+        }
     }
 
     @FXML private void handleAnnuler() { loadNotes(); }

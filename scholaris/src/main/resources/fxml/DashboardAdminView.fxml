@@ -5,134 +5,135 @@
 <?import javafx.scene.control.Hyperlink?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Font?>
 
-<ScrollPane fitToWidth="true" style="-fx-background-color: transparent;" styleClass="bg-page" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.scholaris.controller.DashboardAdminViewController">
+<ScrollPane fitToHeight="true" fitToWidth="true" styleClass="scroll-pane" stylesheets="@../css/dashboard.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.scholaris.controller.DashboardAdminViewController">
    <content>
-      <VBox spacing="20.0" style="-fx-padding: 24;">
+      <VBox spacing="30.0" style="-fx-padding: 30;">
          <children>
-            <!-- HEADER -->
-            <HBox alignment="CENTER_LEFT" spacing="10.0">
+            <!-- HEADER : Titre + Bouton rafraîchir -->
+            <HBox alignment="CENTER_LEFT" spacing="20.0">
                <children>
-                  <VBox spacing="2.0">
+                  <VBox>
                      <children>
-                        <Label styleClass="h1" text="Tableau de bord" />
-                        <Label styleClass="text-muted" text="Trimestre I · 2025-2026" />
+                        <Label style="-fx-font-size: 14; -fx-font-weight: bold; -fx-text-fill: #4A4A6A;" text="APERÇU RAPIDE" />
+                        <Label styleClass="text-muted" text="Résumé de l'activité scolaire" />
                      </children>
                   </VBox>
                   <Region HBox.hgrow="ALWAYS" />
-                  <Label styleClass="badge-blue" text="Administrateur" />
-                  <Button onAction="#handleRefresh" styleClass="secondary-button" text="↻" />
+                  <Button onAction="#handleRefresh" styleClass="btn-refresh" text="↻ Actualiser les données" />
                </children>
             </HBox>
 
-            <!-- KPI ROW -->
-            <HBox spacing="16.0">
+            <!-- KPI CARDS : S'étirent proportionnellement -->
+            <HBox spacing="20.0">
                <children>
-                  <!-- KPI 1: Étudiants -->
-                  <VBox spacing="10.0" styleClass="card" HBox.hgrow="ALWAYS">
-                     <padding><Insets bottom="20.0" left="20.0" right="20.0" top="20.0" /></padding>
+                  <VBox spacing="15.0" styleClass="card" HBox.hgrow="ALWAYS">
                      <children>
-                        <HBox>
+                        <HBox alignment="CENTER_LEFT" spacing="15.0">
                            <children>
-                              <VBox alignment="CENTER" prefHeight="40.0" prefWidth="40.0" style="-fx-background-radius: 8;" styleClass="bg-blue-pale">
-                                 <children><Label styleClass="text-blue" text="👥" /></children>
+                              <VBox alignment="CENTER" styleClass="icon-box, bg-blue-pale">
+                                 <children><Label style="-fx-font-size: 24;" text="👥" /></children>
+                              </VBox>
+                              <VBox>
+                                 <children>
+                                    <Label styleClass="kpi-label" text="ÉTUDIANTS" />
+                                    <Label fx:id="lblEtudiants" styleClass="kpi-value" text="0" />
+                                 </children>
                               </VBox>
                            </children>
                         </HBox>
-                        <Label fx:id="lblEtudiants" style="-fx-font-size: 32; -fx-font-weight: bold;" styleClass="text-navy" text="0" />
-                        <Label styleClass="text-muted" text="ÉTUDIANTS INSCRITS" />
-                        <Label styleClass="badge-blue" text="+2.5% vs T3" />
+                        <Label styleClass="badge-blue" text="+12 nouveaux inscrits" />
                      </children>
                   </VBox>
 
-                  <!-- KPI 2: Classes -->
-                  <VBox spacing="10.0" styleClass="card" HBox.hgrow="ALWAYS">
-                     <padding><Insets bottom="20.0" left="20.0" right="20.0" top="20.0" /></padding>
+                  <VBox spacing="15.0" styleClass="card" HBox.hgrow="ALWAYS">
                      <children>
-                        <HBox>
+                        <HBox alignment="CENTER_LEFT" spacing="15.0">
                            <children>
-                              <VBox alignment="CENTER" prefHeight="40.0" prefWidth="40.0" style="-fx-background-radius: 8;" styleClass="bg-green-pale">
-                                 <children><Label style="-fx-text-fill: #2E8B57;" text="🏠" /></children>
+                              <VBox alignment="CENTER" styleClass="icon-box, bg-green-pale">
+                                 <children><Label style="-fx-font-size: 24;" text="🏠" /></children>
+                              </VBox>
+                              <VBox>
+                                 <children>
+                                    <Label styleClass="kpi-label" text="CLASSES" />
+                                    <Label fx:id="lblClasses" styleClass="kpi-value" text="0" />
+                                 </children>
                               </VBox>
                            </children>
                         </HBox>
-                        <Label fx:id="lblClasses" style="-fx-font-size: 32; -fx-font-weight: bold;" styleClass="text-navy" text="0" />
-                        <Label styleClass="text-muted" text="CLASSES ACTIVES" />
-                        <Label styleClass="badge-green" text="Stable" />
+                        <Label styleClass="badge-green" text="100% opérationnelles" />
                      </children>
                   </VBox>
 
-                  <!-- KPI 3: Moyenne -->
-                  <VBox spacing="10.0" styleClass="card" HBox.hgrow="ALWAYS">
-                     <padding><Insets bottom="20.0" left="20.0" right="20.0" top="20.0" /></padding>
+                  <VBox spacing="15.0" styleClass="card" HBox.hgrow="ALWAYS">
                      <children>
-                        <HBox>
+                        <HBox alignment="CENTER_LEFT" spacing="15.0">
                            <children>
-                              <VBox alignment="CENTER" prefHeight="40.0" prefWidth="40.0" style="-fx-background-radius: 8;" styleClass="bg-gold-pale">
-                                 <children><Label styleClass="text-gold" text="📈" /></children>
+                              <VBox alignment="CENTER" styleClass="icon-box, bg-gold-pale">
+                                 <children><Label style="-fx-font-size: 24;" text="📈" /></children>
+                              </VBox>
+                              <VBox>
+                                 <children>
+                                    <Label styleClass="kpi-label" text="MOYENNE" />
+                                    <Label fx:id="lblMoyenne" styleClass="kpi-value" text="0.00" />
+                                 </children>
                               </VBox>
                            </children>
                         </HBox>
-                        <Label fx:id="lblMoyenne" style="-fx-font-size: 32; -fx-font-weight: bold;" styleClass="text-navy" text="0.00" />
-                        <Label styleClass="text-muted" text="MOYENNE GÉNÉRALE" />
-                        <Label styleClass="badge-gold" text="Tendance ↑" />
+                        <Label styleClass="badge-gold" text="Tendance en hausse" />
                      </children>
                   </VBox>
 
-                  <!-- KPI 4: Difficulté -->
-                  <VBox spacing="10.0" styleClass="card" HBox.hgrow="ALWAYS">
-                     <padding><Insets bottom="20.0" left="20.0" right="20.0" top="20.0" /></padding>
+                  <VBox spacing="15.0" styleClass="card" HBox.hgrow="ALWAYS">
                      <children>
-                        <HBox>
+                        <HBox alignment="CENTER_LEFT" spacing="15.0">
                            <children>
-                              <VBox alignment="CENTER" prefHeight="40.0" prefWidth="40.0" style="-fx-background-radius: 8;" styleClass="bg-red-pale">
-                                 <children><Label styleClass="text-error" text="⚠️" /></children>
+                              <VBox alignment="CENTER" styleClass="icon-box, bg-red-pale">
+                                 <children><Label style="-fx-font-size: 24;" text="⚠️" /></children>
+                              </VBox>
+                              <VBox>
+                                 <children>
+                                    <Label styleClass="kpi-label" text="ALERTES" />
+                                    <Label fx:id="lblDifficulte" styleClass="kpi-value" text="0" />
+                                 </children>
                               </VBox>
                            </children>
                         </HBox>
-                        <Label fx:id="lblDifficulte" style="-fx-font-size: 32; -fx-font-weight: bold;" styleClass="text-navy" text="0" />
-                        <Label styleClass="text-muted" text="ÉLÈVES EN DIFFICULTÉ" />
-                        <Label styleClass="badge-red" text="Urgent" />
+                        <Label styleClass="badge-red" text="Suivi pédagogique requis" />
                      </children>
                   </VBox>
                </children>
             </HBox>
 
-            <!-- PANNEAUX ROW -->
-            <HBox spacing="16.0">
+            <!-- PANELS SECONDAIRES : S'étirent horizontalement et verticalement -->
+            <HBox spacing="20.0" VBox.vgrow="ALWAYS">
                <children>
-                  <!-- Répartition par classe -->
-                  <VBox spacing="15.0" styleClass="card" HBox.hgrow="ALWAYS">
-                     <padding><Insets bottom="20.0" left="20.0" right="20.0" top="20.0" /></padding>
+                  <VBox spacing="20.0" styleClass="card" HBox.hgrow="ALWAYS">
                      <children>
                         <HBox alignment="CENTER_LEFT">
                            <children>
-                              <Label style="-fx-font-weight: bold;" text="Répartition par classe" />
+                              <Label style="-fx-font-size: 18; -fx-font-weight: bold;" text="Répartition des Étudiants" textFill="#1B2A6B" />
                               <Region HBox.hgrow="ALWAYS" />
-                              <Hyperlink onAction="#handleVoirClasses" styleClass="text-blue" text="Voir tout →" />
+                              <Hyperlink onAction="#handleVoirClasses" styleClass="text-blue" text="Détails →" />
                            </children>
                         </HBox>
-                        <VBox fx:id="classesContainer" spacing="12.0" />
+                        <VBox fx:id="classesContainer" spacing="12.0" VBox.vgrow="ALWAYS" />
                      </children>
                   </VBox>
 
-                  <!-- Bulletins récents -->
-                  <VBox spacing="15.0" styleClass="card" HBox.hgrow="ALWAYS">
-                     <padding><Insets bottom="20.0" left="20.0" right="20.0" top="20.0" /></padding>
+                  <VBox spacing="20.0" styleClass="card" HBox.hgrow="ALWAYS">
                      <children>
                         <HBox alignment="CENTER_LEFT">
                            <children>
-                              <Label style="-fx-font-weight: bold;" text="Bulletins récents" />
+                              <Label style="-fx-font-size: 18; -fx-font-weight: bold;" text="Activité des Bulletins" textFill="#1B2A6B" />
                               <Region HBox.hgrow="ALWAYS" />
-                              <Hyperlink onAction="#handleVoirBulletins" styleClass="text-blue" text="Tout voir →" />
+                              <Hyperlink onAction="#handleVoirBulletins" styleClass="text-blue" text="Gérer →" />
                            </children>
                         </HBox>
-                        <VBox fx:id="bulletinsContainer" spacing="8.0" />
+                        <VBox fx:id="bulletinsContainer" spacing="10.0" VBox.vgrow="ALWAYS" />
                      </children>
                   </VBox>
                </children>

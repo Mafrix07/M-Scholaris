@@ -23,6 +23,7 @@ import javafx.stage.FileChooser;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Map;
 
 public class BulletinController extends BaseController {
@@ -120,28 +121,47 @@ public class BulletinController extends BaseController {
 
     private void loadBulletin(Etudiant e) {
         try {
+            int year = java.time.LocalDate.now().getYear();
+            String periode = "Trimestre 1";
+
             lblNomEtudiant.setText(e.getNomComplet());
             lblInfoEtudiant.setText(e.getMatricule() + " · " + e.getClasse().getNom());
             lblNomComplet.setText(e.getNomComplet());
             lblMatricule.setText(e.getMatricule());
             lblClasse.setText(e.getClasse().getNom());
-            lblPeriode.setText("Trimestre 1 · 2025");
+            lblPeriode.setText(periode + " · " + year);
+            lblTrimestre.setText(periode);
             
-            double moyGen = moyenneService.calculerMoyenneGenerale(e.getId(), "Trimestre 1", 2025);
+            double moyGen = moyenneService.calculerMoyenneGenerale(e.getId(), periode, year);
             lblMoyGeneral.setText(String.format("%.2f", moyGen));
-            lblAppGeneral.setText(getAppreciation(moyGen));
-            lblAppGeneral.getStyleClass().setAll("badge", getBadgeClass(getAppreciation(moyGen)));
+            String app = moyenneService.getMention(moyGen);
+            lblAppGeneral.setText(app);
+            lblAppGeneral.getStyleClass().setAll("badge", getBadgeClass(app));
+            
+            // Récupérer le rang
+            var rangObj = new com.scholaris.dao.RangDAO().trouverRangGeneral(e.getId(), periode, year);
+            if (rangObj != null) {
+                lblRang.setText("Rang : " + rangObj.getRang() + " / " + rangObj.getEffectif());
+            } else {
+                lblRang.setText("Rang : - / -");
+            }
             
             // Charger les notes par matière
             ObservableList<BulletinRow> rows = FXCollections.observableArrayList();
-            Map<Integer, Double> moyennes = moyenneService.calculerMoyennesToutesMatieres(e.getId(), "Trimestre 1", 2025);
+            Map<Integer, Double> moyennes = moyenneService.calculerMoyennesToutesMatieres(e.getId(), periode, year);
             for (Map.Entry<Integer, Double> entry : moyennes.entrySet()) {
                 Matiere m = matiereDAO.trouverParId(entry.getKey());
                 BulletinRow row = new BulletinRow();
                 row.matiere = m.getNom();
                 row.note = entry.getValue();
-                row.moyClasse = 12.5; // TODO: charger la vraie moyenne de classe
-                row.appreciation = getAppreciation(row.note);
+                
+                double moyCls = 0;
+                var listMoy = new com.scholaris.dao.NoteDAO().getMoyennesParMatiere(e.getClasse().getId(), m.getId(), periode, year);
+                if (!listMoy.isEmpty()) {
+                    moyCls = listMoy.stream().mapToDouble(d -> d[1]).average().orElse(0);
+                }
+                row.moyClasse = moyCls;
+                row.appreciation = moyenneService.getMention(row.note);
                 rows.add(row);
             }
             bulletinTable.setItems(rows);
@@ -149,14 +169,6 @@ public class BulletinController extends BaseController {
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
-    }
-
-    private String getAppreciation(double v) {
-        if (v >= 16) return "Très Bien";
-        if (v >= 14) return "Bien";
-        if (v >= 12) return "Assez Bien";
-        if (v >= 10) return "Passable";
-        return "Insuffisant";
     }
 
     private String getBadgeClass(String app) {
@@ -171,21 +183,46 @@ public class BulletinController extends BaseController {
     @FXML
     private void handleGenererPDF() {
         Etudiant e = etudiantListView.getSelectionModel().getSelectedItem();
-        if (e == null) return;
+        if (e == null) {
+            showAlert(Alert.AlertType.WARNING, "Sélection requise", "Veuillez sélectionner un étudiant.");
+            return;
+        }
 
-        FileChooser chooser = new FileChooser();
-        chooser.setInitialFileName("Bulletin_" + e.getMatricule() + ".pdf");
-        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("PDF", "*.pdf"));
-        File file = chooser.showSaveDialog(bulletinTable.getScene().getWindow());
+        int year = java.time.LocalDate.now().getYear();
+        String periode = "Trimestre 1";
+
+        try {
+            bulletinService.genererEtSauvegarderBulletin(e.getId(), periode, year);
+            showAlert(Alert.AlertType.INFORMATION, "Succès", "Bulletin généré dans target/bulletins/");
+        } catch (SQLException | IOException ex) {
+            ex.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur lors de la génération : " + ex.getMessage());
+        }
+    }
+
+    @FXML
+    private void handleGenererClasse() {
+        Etudiant e = etudiantListView.getSelectionModel().getSelectedItem();
+        if (e == null) return;
         
-        if (file != null) {
+        int classeId = e.getClasse().getId();
+        int year = java.time.LocalDate.now().getYear();
+        String periode = "Trimestre 1";
+
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Génération en masse");
+        alert.setHeaderText("Générer tous les bulletins pour la classe " + e.getClasse().getNom() + " ?");
+        
+        if (alert.showAndWait().get() == ButtonType.OK) {
             try {
-                bulletinService.genererEtSauvegarderBulletin(e.getId(), "Trimestre 1", 2025);
-                // Le service génère dans target/bulletins, on pourrait copier vers 'file'
-                showAlert(Alert.AlertType.INFORMATION, "Succès", "Bulletin généré avec succès !");
+                List<Etudiant> etudiants = etudiantDAO.trouverParClasse(classeId);
+                for (Etudiant etu : etudiants) {
+                    bulletinService.genererEtSauvegarderBulletin(etu.getId(), periode, year);
+                }
+                showAlert(Alert.AlertType.INFORMATION, "Succès", etudiants.size() + " bulletins générés dans target/bulletins/");
             } catch (SQLException | IOException ex) {
                 ex.printStackTrace();
-                showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur lors de la génération : " + ex.getMessage());
+                showAlert(Alert.AlertType.ERROR, "Erreur", ex.getMessage());
             }
         }
     }
