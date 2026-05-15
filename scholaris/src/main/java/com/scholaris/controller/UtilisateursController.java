@@ -148,9 +148,18 @@ public class UtilisateursController extends BaseController {
             stage.initOwner(userTable.getScene().getWindow());
             stage.setScene(new Scene(root));
             stage.showAndWait();
+            
+            // Recharger la liste locale pour voir le nouveau badge de rôle
             loadUsers();
+            
+            // Informer l'utilisateur que le changement est effectif partout
+            showAlert(Alert.AlertType.INFORMATION, "Action réussie", 
+                "Le rôle a été mis à jour. S'il s'agissait d'une promotion, " +
+                "l'utilisateur a été retiré de la liste des étudiants.");
+                
         } catch (IOException | SQLException e) {
             e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Impossible d'ouvrir le dialogue : " + e.getMessage());
         }
     }
 

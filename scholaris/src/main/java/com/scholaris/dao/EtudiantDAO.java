@@ -163,39 +163,77 @@ public class EtudiantDAO implements IDao<Etudiant> {
         }
     }
 
-    /** Trouve une classe disponible selon le niveau et la série choisis. */
+    /** Trouve une classe disponible ou en crée une nouvelle (limite 15 élèves, max 3 classes par niveau). */
     public Classe trouverClasseDisponible(String niveau, String serie) throws SQLException {
-        // Le nom de la classe contient souvent le niveau et la série (ex: 'Terminale D')
-        String pattern = niveau + (serie != null && !serie.isEmpty() ? " " + serie : "");
         int anneeScolaire = java.time.LocalDate.now().getYear();
+        String patternBase = niveau + (serie != null && !serie.isEmpty() ? " " + serie : "");
 
-        String sql = """
-            SELECT c.id, c.nom, c.niveau, c.annee_scolaire,
-                   COUNT(e.id) AS effectif_actuel
+        // 1. Chercher une classe existante avec de la place (< 15 élèves)
+        String sqlSearch = """
+            SELECT c.*, COUNT(e.id) as effectif
             FROM classe c
             LEFT JOIN etudiant e ON e.classe_id = c.id
-            WHERE c.nom LIKE ?
-              AND c.annee_scolaire = ?
-            GROUP BY c.id, c.nom, c.niveau, c.annee_scolaire
-            HAVING COUNT(e.id) < 50
-            ORDER BY RANDOM()
-            LIMIT 1
+            WHERE c.nom LIKE ? AND c.annee_scolaire = ?
+            GROUP BY c.id
+            HAVING COUNT(e.id) < 15
+            ORDER BY c.nom ASC LIMIT 1
             """;
 
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, "%" + pattern + "%");
+        try (PreparedStatement ps = conn.prepareStatement(sqlSearch)) {
+            ps.setString(1, patternBase + "%");
             ps.setInt(2, anneeScolaire);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                Classe c = new Classe();
-                c.setId(rs.getInt("id"));
-                c.setNom(rs.getString("nom"));
-                c.setNiveau(rs.getString("niveau"));
-                c.setAnneeScolaire(rs.getInt("annee_scolaire"));
-                return c;
+                return mapClasse(rs);
             }
         }
-        return null;
+
+        // 2. Si pas de place, compter combien de classes existent déjà pour ce niveau
+        String sqlCount = "SELECT COUNT(*) FROM classe WHERE nom LIKE ? AND annee_scolaire = ?";
+        int existingClasses = 0;
+        try (PreparedStatement ps = conn.prepareStatement(sqlCount)) {
+            ps.setString(1, patternBase + "%");
+            ps.setInt(2, anneeScolaire);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) existingClasses = rs.getInt(1);
+        }
+
+        // 3. Créer une nouvelle classe si on est sous la limite de 3
+        if (existingClasses < 3) {
+            char suffix = (char) ('A' + existingClasses); // A, B, C...
+            String nouveauNom = patternBase + " " + suffix;
+            
+            Classe nouvelleClasse = new Classe();
+            nouveauNom = nouveauNom.trim();
+            
+            String sqlInsert = "INSERT INTO classe (nom, niveau, annee_scolaire) VALUES (?, ?, ?)";
+            try (PreparedStatement ps = conn.prepareStatement(sqlInsert, Statement.RETURN_GENERATED_KEYS)) {
+                ps.setString(1, nouveauNom);
+                ps.setString(2, niveau);
+                ps.setInt(3, anneeScolaire);
+                ps.executeUpdate();
+                ResultSet rs = ps.getGeneratedKeys();
+                if (rs.next()) {
+                    Classe c = new Classe();
+                    c.setId(rs.getInt(1));
+                    c.setNom(nouveauNom);
+                    c.setNiveau(niveau);
+                    c.setAnneeScolaire(anneeScolaire);
+                    return c;
+                }
+            }
+        }
+
+        return null; // Plus aucune place du tout (3 classes de 15 élèves pleines)
+    }
+
+    private Classe mapClasse(ResultSet rs) throws SQLException {
+        Classe c = new Classe();
+        c.setId(rs.getInt("id"));
+        c.setNom(rs.getString("nom"));
+        c.setNiveau(rs.getString("niveau"));
+        c.setAnneeScolaire(rs.getInt("annee_scolaire"));
+        return c;
     }
 
     /** Retourne tous les étudiants d'une classe. */
